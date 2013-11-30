@@ -1,0 +1,10 @@
+lee@ubuntu:~/lee-private-project/trunk/easy/src/test/linux_c_class_static_lib$ g++ -c a.cc
+lee@ubuntu:~/lee-private-project/trunk/easy/src/test/linux_c_class_static_lib$ ar r liba.a a.o
+ar: creating liba.a
+lee@ubuntu:~/lee-private-project/trunk/easy/src/test/linux_c_class_static_lib$ g++ test.cc -la -L. -static -o test
+lee@ubuntu:~/lee-private-project/trunk/easy/src/test/linux_c_class_static_lib$ ./test
+ A construct call
+ A! hello
+ A deconstruct call
+lee@ubuntu:~/lee-private-project/trunk/easy/src/test/linux_c_class_static_lib$ 
+

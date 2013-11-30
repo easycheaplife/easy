@@ -1,0 +1,145 @@
+1、目录树
+|-- app
+| |-- Makefile
+| `-- test.c
+|-- Makefile
+`-- mylib
+|-- Makefile
+|-- myadd.c
+|-- myadd.h
+|-- mysub.c
+`-- mysub.h
+ 
+
+2、静态库的创建
+（1）app/Makefile
+OBJS=test.o
+INCLUDE_DIR=../mylib
+CFLAGS += -I$(INCLUDE_DIR)
+LDFLAGS += -L$(INCLUDE_DIR) 
+
+test : $(OBJS)
+    $(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ -lmy
+ 
+.PHONY : clean
+clean:
+    -rm *.o test
+ 
+（2）app/test.c
+#include <stdio.h>
+#include "myadd.h"
+#include "mysub.h"
+ 
+int main()
+{
+    int a=5,b=3;
+    printf("%d+%d=%d %d-%d=%d/n", a, b, myadd(a, b), a, b, mysub(a, b));
+    return 0;
+}
+ 
+（3）Makefile
+CC = gcc
+LD = ld
+AR = ar
+ARFLAGS = -cr
+export CC LD AR ARFLAGS
+ 
+SUBDIRS = mylib app
+ 
+.PHONY : all
+all:
+    @for subdir in $(SUBDIRS); /
+    do /
+        ( cd $subdir && $(MAKE)) || exit 1; /
+    done
+ 
+.PHONY : clean
+clean:
+    @ for subdir in $(SUBDIRS); /
+    do /
+        (make clean -C $subdir); /
+    done
+ 
+（4）mylib/Makefile
+OBJS = myadd.o mysub.o
+ 
+libmy.a : $(OBJS)
+    $(AR) $(ARFLAGS) $@ $^
+ 
+%.o: %.c %.h
+    $(CC) -c tiny_mce_markerlt;
+ 
+.PHONY : clean
+clean:
+    -rm *.o *.a
+【说明】tiny_mce_markerlt;改为$^时，会生成xxx.h.gch文件。将.h文件当成.c文件一样来编译就会生成.gch文件，这是gcc的预编译头技术，可以提高编译速度
+ 
+（5）mylib/myadd.c
+#include "myadd.h"
+ 
+int myadd(int a, int b)
+{
+    return a+b;
+}
+ 
+（6）mylib/myadd.h
+#ifndef __MYADD_H__
+#define __MYADD_H__
+ 
+int myadd(int a, int b);
+ 
+#endif
+ 
+（7）mylib/mysub.c
+#include "mysub.h"
+ 
+int mysub(int a, int b)
+{
+    return a-b;
+}
+ 
+（8）mylib/mysub.h
+#ifndef __MYSUB_H__
+#define __MYSUB_H__
+ 
+int mysub(int a, int b);
+ 
+#endif
+ 
+
+3、动态库的创建
+mylib/Makefile
+OBJS = myadd.o mysub.o
+ 
+libmy.so : $(OBJS)
+    gcc -shared -fPCI $^ -o $@
+ 
+%.o: %.c %.h
+    $(CC) -c tiny_mce_markerlt;
+ 
+.PHONY : clean
+clean:
+    -rm *.o *.so
+ 
+
+4、动态库的使用
+$ ldd ./app/test 
+    linux-gate.so.1 => (0x0085c000)
+    libmy.so => not found
+    libc.so.6 => /lib/libc.so.6 (0x00221000)
+    /lib/ld-linux.so.2 (0x00200000)
+ 
+$ ./app/test 
+    ./app/test: error while loading shared libraries: libmy.so: cannot open shared object file: No such file or directory
+ 
+$export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./mylib
+ 
+$ ldd ./app/test 
+    linux-gate.so.1 => (0x00b29000)
+    libmy.so => ./mylib/libmy.so (0x00246000)
+    libc.so.6 => /lib/libc.so.6 (0x00248000)
+    /lib/ld-linux.so.2 (0x00200000)
+ 
+$ ./app/test 
+    5+3=8 5-3=2
+

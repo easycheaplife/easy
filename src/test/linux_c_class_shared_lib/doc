@@ -1,0 +1,25 @@
+lee@ubuntu:~/lee-private-project/trunk/easy/src/test/linux_c_class_shared_lib_callback$ g++ a.cc -fPIC -shared -o libeasy.so
+lee@ubuntu:~/lee-private-project/trunk/easy/src/test/linux_c_class_shared_lib_callback$ g++ test.cc -L. -I. -leasy -o test
+lee@ubuntu:~/lee-private-project/trunk/easy/src/test/linux_c_class_shared_lib_callback$ ldd ./test
+	linux-vdso.so.1 =>  (0x00007fff4430c000)
+	libeasy.so => not found
+	libstdc++.so.6 => /usr/lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f4bc9c88000)
+	libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f4bc9a71000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f4bc96d2000)
+	libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f4bc944e000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f4bc9fa7000)
+lee@ubuntu:~/lee-private-project/trunk/easy/src/test/linux_c_class_shared_lib_callback$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./easy
+lee@ubuntu:~/lee-private-project/trunk/easy/src/test/linux_c_class_shared_lib_callback$ ldd ./test
+	linux-vdso.so.1 =>  (0x00007fffbb759000)
+	libeasy.so (0x00007f21cc295000)
+	libstdc++.so.6 => /usr/lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f21cbf78000)
+	libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f21cbd61000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f21cb9c2000)
+	libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f21cb73e000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f21cc49a000)
+lee@ubuntu:~/lee-private-project/trunk/easy/src/test/linux_c_class_shared_lib_callback$ ./test
+ A construct call
+ A! hello
+ A deconstruct call
+ base class I deconstruct call
+

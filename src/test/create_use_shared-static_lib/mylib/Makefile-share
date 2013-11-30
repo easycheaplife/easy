@@ -1,0 +1,9 @@
+OBJS = myadd.o mysub.o
+libmy.so: $(OBJS)
+	$(CC) -shared -fPCI $^ -o $@
+%.o: %.c %.h
+	$(CC) -c myadd.c mysub.c
+.PHONY: clean
+clean:
+	-rm *.o *.so
+	

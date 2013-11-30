@@ -1,0 +1,102 @@
+一。静态库
+ 
+创建静态库
+ 
+　　仍使用刚才的hello.c和test.c。
+ 
+　　第一步，生成目标文件。
+ 
+　　gcc -c hello.c
+ 
+　　第二步,把目标文件归档。
+ 
+　　ar r libhello.a hello.o
+ 
+　　file libhello.a
+　　下面一行命令就是教你如何在程序中链接静态库的：
+ 
+　　gcc test.c -lhello -L. -static -o hello.static
+ 
+
+MAKEFILE************
+ 
+CC=g++
+ 
+CCFLAGS=-Wall -g
+ 
+LDFLAGS=-fPIC -shared
+ 
+TASKPATH=.
+ 
+ 
+all: init libmkdir.a
+ cp -rf libmkdir.a  $(TASKPATH)/lib
+ 
+init:
+ mkdir -p $(TASKPATH)/task
+ mkdir -p $(TASKPATH)/lib
+ 
+ 
+libmkdir.a: mkdir_mod.o
+ ar r libmkdir.a mkdir_mod.o
+ 
+mkdir_mod.o: mkdir.h
+ $(CC) -c $(CCFLAGS) mkdir_mod.cpp
+ 
+clean:
+ -rm -rf $(TASKPATH)/task
+ -rm -rf $(TASKPATH)/lib
+ -rm -rf libmkdir.a
+ -rm -rf mkdir_mod.o
+ 
+ 
+ 
+
+二。动态库
+ 
+编译生成动态库
+ 
+     gcc getmaxlen.c –fPIC –shared –o libtest.so
+ 
+由以上命令生成动态库libtest.so，为了不需要动态加载动态库，在命令时需以lib开头以.so为后缀。
+ 
+–fPIC：表示编译为位置独立的代码，不用此选项的话编译后的代码是位置相关的所以动态载入时是通过代码拷贝的方式来满足不同进程的需要，而不能达到真正代码段共享的目的。
+ 
+–shared：指明编译成动态库。
+ 
+gcc test.c –L . –l test –o test
+ 
+     –L：指明动态库所在的目录
+ 
+      -l：指明动态库的名称，该名称是处在头lib和后缀.so中的名称，如上动态库libtest.so的l参数为-l test。
+ 
+ 
+ 
+MAKEFILE************
+ 
+CC=g++
+ 
+CCFLAGS=-Wall -g
+ 
+LDFLAGS=-fPIC -shared
+ 
+TASKPATH=.
+ 
+ 
+all: init libtdir.so
+ cp -rf libdir.so  $(TASKPATH)/lib
+ 
+init:
+ mkdir -p $(TASKPATH)/task
+ mkdir -p $(TASKPATH)/lib
+ 
+libdir.so: mkdir_mod.o
+ $(CC)  mkdir_mod.cpp  $(LDFLAGS) -o libdir.so
+ 
+ 
+clean:
+ -rm -rf $(TASKPATH)/task
+ -rm -rf $(TASKPATH)/lib
+ -rm -rf libdir.so
+ -rm -rf mkdir_mod.o
+

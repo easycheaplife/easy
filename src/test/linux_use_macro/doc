@@ -1,0 +1,11 @@
+lee@ubuntu:~/lee-private-project/trunk/easy/src/test/linux_use_macro$ g++ -o test test.cc
+test.cc:7:7: warning: extra tokens at end of #else directive [enabled by default]
+lee@ubuntu:~/lee-private-project/trunk/easy/src/test/linux_use_macro$ ./test
+__LINUX
+lee@ubuntu:~/lee-private-project/trunk/easy/src/test/linux_use_macro$ g++ -D __WINDOWS -o test test.cc
+test.cc:7:7: warning: extra tokens at end of #else directive [enabled by default]
+lee@ubuntu:~/lee-private-project/trunk/easy/src/test/linux_use_macro$ ./test__WINDOWS
+lee@ubuntu:~/lee-private-project/trunk/easy/src/test/linux_use_macro$ g++ -D __LINUX -o test test.cc
+test.cc:7:7: warning: extra tokens at end of #else directive [enabled by default]
+lee@ubuntu:~/lee-private-project/trunk/easy/src/test/linux_use_macro$ ./test__LINUX
+

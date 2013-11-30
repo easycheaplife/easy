@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\base\easy_atomic_op.cc" />
+    <ClCompile Include="..\src\base\easy_big_int.cc" />
+    <ClCompile Include="..\src\base\easy_exception.cc" />
+    <ClCompile Include="..\src\base\easy_log.cc" />
+    <ClCompile Include="..\src\base\easy_threading.cc" />
+    <ClCompile Include="..\src\base\easy_util.cc" />
+    <ClCompile Include="..\src\database\easy_field.cc" />
+    <ClCompile Include="..\src\database\easy_mysql_connection.cc" />
+    <ClCompile Include="..\src\database\easy_prepared_statement.cc" />
+    <ClCompile Include="..\src\database\easy_query_result.cc" />
+    <ClCompile Include="..\src\main\easy_main.cc" />
+    <ClCompile Include="..\src\test\exception_c\item21.cc" />
+    <ClCompile Include="..\src\test\exception_c\item23.cc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\base\easy_atomic_op.h" />
+    <ClInclude Include="..\src\base\easy_big_int.h" />
+    <ClInclude Include="..\src\base\easy_exception.h" />
+    <ClInclude Include="..\src\base\easy_log.h" />
+    <ClInclude Include="..\src\base\easy_priority_queue.h" />
+    <ClInclude Include="..\src\base\easy_threading.h" />
+    <ClInclude Include="..\src\base\easy_util.h" />
+    <ClInclude Include="..\src\database\easy_field.h" />
+    <ClInclude Include="..\src\database\easy_mysql_connection.h" />
+    <ClInclude Include="..\src\database\easy_prepared_statement.h" />
+    <ClInclude Include="..\src\database\easy_query_result.h" />
+    <ClInclude Include="..\src\test\cppunit\easy_cppunit_mini.h" />
+    <ClInclude Include="..\src\test\cppunit\easy_cppunit_proxy.h" />
+    <ClInclude Include="..\src\test\cppunit\easy_cppunit_timer.h" />
+    <ClInclude Include="..\src\test\cppunit\easy_file_reporter.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{A25DA61E-D04B-44EF-A6DA-23B57FEBAE1A}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>easy</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)..\bin</OutDir>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;__WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\dep\ExceptionLib;$(SolutionDir)..\dep\mysql\include;$(SolutionDir)..\src\base;$(SolutionDir)..\src\database;$(SolutionDir)..\src\test;$(SolutionDir)..\src\test\cppunit;$(SolutionDir)..\src\test\effective_c;$(SolutionDir)..\dep\boost_1_47_0;$(SolutionDir)..\dep\libevent2016;$(SolutionDir)..\dep\libevent2016\WIN32-Code;$(SolutionDir)..\dep\libevent2016\include;$(SolutionDir)..\dep\ace;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerOutput>All</AssemblerOutput>
+      <EnablePREfast>true</EnablePREfast>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\lib;$(SolutionDir)..\dep\mysql\lib\debug;$(SolutionDir)..\dep\ace\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libmysql.lib;ExpLib_d.lib;Shlwapi.lib;libevent.lib;libevent_core.lib;libevent_extras.lib;ws2_32.lib;ACEd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateMapFile>false</GenerateMapFile>
+      <HeapReserveSize>
+      </HeapReserveSize>
+      <HeapReserveSize>
+      </HeapReserveSize>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
