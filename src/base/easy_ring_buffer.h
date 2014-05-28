@@ -19,7 +19,7 @@ purpose:	a ring buffer
 #include "easy_assist.h"
 #endif
 
-#define EXTRA_BUFFER_SIZE		64
+#define EXTRA_BUFFER_SIZE		64*1024
 
 namespace easy
 {
@@ -199,6 +199,34 @@ namespace easy
 			std::cout << "read---buffer size = " << size_ << " rpos_ = " << rpos_ << " wpos_ = " << wpos_ << std::endl;
 #endif // _DEBUG
 			return r;
+		}
+
+		void pre_read(easy_uint8* des,size_t len)
+		{
+			if (_read_finish())
+			{
+				return;
+			}
+			if (rpos_ < wpos_)
+			{
+				if (wpos_ - rpos_ >= len)
+				{
+					memmove(des,buffer_ + rpos_,len);
+				}
+				//	else just skip
+			}
+			else if (rpos_ > wpos_)
+			{
+				if (size_ - rpos_ >= len)
+				{
+					memmove(des,buffer_ + rpos_,len);
+				}
+				else
+				{
+					memmove(des,buffer_ + rpos_, size_ - rpos_);
+					memmove(des + size_ - rpos_, buffer_, len - (size_ - rpos_));
+				}
+			}
 		}
 
 		void read(easy_uint8* des,size_t len)

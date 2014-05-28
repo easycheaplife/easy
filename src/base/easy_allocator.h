@@ -269,9 +269,18 @@ namespace easy
 		{
 			mutex_lock	__lock;
 			__lock.acquire_lock();
-			void* __result = malloc(__n);
-			if (0 == __result) 
-				__result = _S_oom_malloc(__n);
+			void* __result = NULL;
+			try{
+				__result = malloc(__n);
+				if (0 == __result) 
+					__result = _S_oom_malloc(__n);
+			}
+			catch(std::bad_alloc)
+			{
+				__lock.release_lock();
+				return __result;
+			}
+
 			__lock.release_lock();
 			return __result;
 		}
