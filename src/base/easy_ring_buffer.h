@@ -331,6 +331,14 @@ namespace easy
 		size_t rpos() const { return rpos_; }
 
 		size_t wpos() const { return wpos_; }
+		
+	public:
+		//	be careful to use,for special uses !
+		_Type* buffer() {return buffer_; }
+
+		void set_rpos(size_t __rpos) { rpos_ = __rpos; }
+
+		void set_wpos(size_t __wpos) { wpos_ = __wpos; }
 
 	private:
 		_Type* _allocate(size_t size) 
