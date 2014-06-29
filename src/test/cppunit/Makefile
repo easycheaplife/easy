@@ -21,7 +21,8 @@ CPPFLAGS = $(CFLAGS)
 #****************************************************************************
 OBJS = easy_main.o
 SRCS = easy_main.cc \
-../stl/stl_advance_test.cc \
+../easy_test_dump.cc \
+#../stl/stl_advance_test.cc \
 #../easy_unit_test_template.cc \
 #../easy_test_log.cc \
 #../easy_test_singleton.cc \
@@ -34,6 +35,7 @@ SRCS = easy_main.cc \
 #../easy_test_ring_buffer.cc \
 #../easy_test_threading.cc \
 #../easy_test_stdandard_allocator.cc \
+
 
 .PHONY : easy_main
 easy_main : $(OBJS) 
