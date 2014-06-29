@@ -2,6 +2,7 @@
 #include "easy_dump.h"
 
 //	reference from http://blog.csdn.net/b_fushuaibing/article/details/5560304
+//	to show function by address: addr2line -e easy_main -f 0x4018d6
 
 //
 // TestCase class
@@ -12,12 +13,17 @@ class TestDump : public CPPUNIT_NS::TestCase
 #if 0
 	CPPUNIT_IGNORE;
 #endif
-	CPPUNIT_TEST(test);
-	CPPUNIT_TEST(test_signal);
+	//CPPUNIT_TEST(test);
+	//CPPUNIT_TEST(test_signal_segv);
+	CPPUNIT_TEST(test_signal_segv2);
+	//CPPUNIT_TEST(test_signal_abrt);
 	CPPUNIT_TEST_SUITE_END();
 
 protected:
 	void test();
+	void test_signal_segv();
+	void test_signal_segv2();
+	void test_signal_abrt();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestDump);
@@ -39,9 +45,9 @@ void myfunc(int ncalls)
         myfunc2();
 }
 
-void dump_print()
+void register_signal(int __signal)
 {
-	signal(SIGSEGV, dump);
+	signal(__signal, dump);
 }
 
 void segv_fun()
@@ -50,14 +56,35 @@ void segv_fun()
 	*__ptr = 0x00;
 }
 
-void TestDump::test()
+void abrt_fun()
 {
-	printf("TestDump::test\n");
-	myfunc(1);
+	abort();
 }
 
-void TestDump::test_signal()
+void TestDump::test()
 {
-	dump_print();
+	printf("TestDump::test---\n");
+	myfunc(3);
 }
+
+void TestDump::test_signal_segv()
+{
+	printf("TestDump::test_signal SIGSEGV\n");
+	register_signal(SIGSEGV);
+	segv_fun();
+}
+
+void TestDump::test_signal_segv2()
+{
+	printf("TestDump::test_signal, maybe a core file \n");
+	segv_fun();
+}
+
+void TestDump::test_signal_abrt()
+{
+	printf("TestDump::test_signal SIGABRT\n");
+	register_signal(SIGABRT);
+	abrt_fun();
+}
+
 
