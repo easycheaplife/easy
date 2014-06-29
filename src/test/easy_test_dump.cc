@@ -14,8 +14,8 @@ class TestDump : public CPPUNIT_NS::TestCase
 	CPPUNIT_IGNORE;
 #endif
 	//CPPUNIT_TEST(test);
-	//CPPUNIT_TEST(test_signal_segv);
-	CPPUNIT_TEST(test_signal_segv2);
+	CPPUNIT_TEST(test_signal_segv);
+	//CPPUNIT_TEST(test_signal_segv2);
 	//CPPUNIT_TEST(test_signal_abrt);
 	CPPUNIT_TEST_SUITE_END();
 

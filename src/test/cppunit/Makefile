@@ -39,7 +39,7 @@ SRCS = easy_main.cc \
 
 .PHONY : easy_main
 easy_main : $(OBJS) 
-	$(CXX) $(SRCS) -I./ -D__LINUX $(CPPFLAGS) $(LFLAGS) -o $^ -o $@ -leasy -pthread
+	$(CXX) $(SRCS) -I./ -D__LINUX $(CPPFLAGS) $(LFLAGS) -o $^ -o $@ -leasy -pthread -rdynamic
 .PHONY : clean
 clean:
 	-rm *.o test_main
