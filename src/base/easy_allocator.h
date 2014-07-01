@@ -267,35 +267,30 @@ namespace easy
 	public:
 		static void* allocate(size_t __n)
 		{
-			mutex_lock	__lock;
-			__lock.acquire_lock();
 			void* __result = malloc(__n);
 			if (0 == __result) 
+			{
 				__result = _S_oom_malloc(__n);
-			__lock.release_lock();
+			}
 			return __result;
 		}
 
 		static void deallocate(void* __p, size_t /* __n */)
 		{
-			mutex_lock	__lock;
-			__lock.acquire_lock();
 			if (__p)
 			{
 				free(__p);
 				__p = 0;
 			}
-			__lock.release_lock();
 		}
 
 		static void* reallocate(void* __p, size_t /* old_sz */, size_t __new_sz)
 		{
-			mutex_lock	__lock;
-			__lock.acquire_lock();
 			void* __result = realloc(__p, __new_sz);
 			if (0 == __result) 
+			{
 				__result = _S_oom_realloc(__p, __new_sz);
-			__lock.release_lock();
+			}
 			return __result;
 		}
 

@@ -201,11 +201,11 @@ namespace easy
 			return r;
 		}
 
-		void pre_read(easy_uint8* des,size_t len)
+		easy_bool pre_read(easy_uint8* des,size_t len)
 		{
-			if (_read_finish())
+			if (read_finish())
 			{
-				return;
+				return false;
 			}
 			if (rpos_ < wpos_)
 			{
@@ -213,7 +213,11 @@ namespace easy
 				{
 					memmove(des,buffer_ + rpos_,len);
 				}
-				//	else just skip
+				else
+				{
+					return false;
+				}
+
 			}
 			else if (rpos_ > wpos_)
 			{
@@ -223,17 +227,26 @@ namespace easy
 				}
 				else
 				{
-					memmove(des,buffer_ + rpos_, size_ - rpos_);
-					memmove(des + size_ - rpos_, buffer_, len - (size_ - rpos_));
+					//	is enough
+					if(size_ - rpos_ + wpos_ >= len)
+					{
+						memmove(des,buffer_ + rpos_, size_ - rpos_);
+						memmove(des + size_ - rpos_, buffer_, len - (size_ - rpos_));
+					}
+					else
+					{
+						return false;
+					}
 				}
 			}
+			return true;
 		}
 
-		void read(easy_uint8* des,size_t len)
+		easy_bool read(easy_uint8* des,size_t len)
 		{
-			if (_read_finish())
+			if (read_finish())
 			{
-				return;
+				return false;
 			}
 			if (rpos_ < wpos_)
 			{
@@ -242,7 +255,11 @@ namespace easy
 					memmove(des,buffer_ + rpos_,len);
 					rpos_ += len;
 				}
-				//	else just skip
+				else
+				{
+					return false;
+				}
+				
 			}
 			else if (rpos_ > wpos_)
 			{
@@ -253,11 +270,20 @@ namespace easy
 				}
 				else
 				{
-					memmove(des,buffer_ + rpos_, size_ - rpos_);
-					memmove(des + size_ - rpos_, buffer_, len - (size_ - rpos_));
-					rpos_ = len - (size_ - rpos_);
+					//	is enough
+					if(size_ - rpos_ + wpos_ >= len)
+					{
+						memmove(des,buffer_ + rpos_, size_ - rpos_);
+						memmove(des + size_ - rpos_, buffer_, len - (size_ - rpos_));
+						rpos_ = len - (size_ - rpos_);
+					}
+					else
+					{
+						return false;
+					}
 				}
 			}
+			return true;
 		}
 
 		EasyRingbuffer& operator >> (easy_bool& val)
@@ -331,6 +357,8 @@ namespace easy
 		size_t rpos() const { return rpos_; }
 
 		size_t wpos() const { return wpos_; }
+
+		easy_bool read_finish() { return wpos_ == rpos_; }
 		
 	public:
 		//	be careful to use,for special uses !
@@ -354,8 +382,6 @@ namespace easy
 		}
 
 		void _reallocate(void* p,size_t old_size,size_t new_size) { alloc_type_.reallocate(p,old_size,new_size); }
-
-		easy_bool _read_finish() { return wpos_ == rpos_; }
 
 	private:
 		EasyRingbuffer ( const EasyRingbuffer& );
