@@ -16,6 +16,10 @@
 #endif //__WINDOWS
 #endif //WIN32
 
+#ifndef __USE_CRITICAL_SECTION
+#define __USE_CRITICAL_SECTION
+#endif // __USE_CRITICAL_SECTION
+
 #include <cstddef>
 #if defined __LINUX && !defined __NO_THREAD
 #include <pthread.h>
