@@ -21,7 +21,8 @@ CPPFLAGS = $(CFLAGS)
 #****************************************************************************
 OBJS = easy_main.o
 SRCS = easy_main.cc \
-../easy_test_dump.cc \
+../stl/stl_map_test.cc \
+#../easy_test_dump.cc \
 #../stl/stl_advance_test.cc \
 #../easy_unit_test_template.cc \
 #../easy_test_log.cc \
