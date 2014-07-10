@@ -24,3 +24,5 @@
 *.sdf
 *.opensdf
 Debug/
+core.*
+src/test/cppunit/easy_main

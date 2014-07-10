@@ -10,7 +10,7 @@ purpose:	a ring buffer
 #ifndef easy_ring_buffer_h__
 #define easy_ring_buffer_h__
 #include <string>
-
+#include <string.h>
 #if 0
 #ifndef easy_base_type_h__
 #include "easy_base_type.h"
