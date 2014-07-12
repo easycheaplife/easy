@@ -37,6 +37,12 @@ namespace easy
 			buffer_ = _allocate(size_);
 		}
 
+		void reset()
+		{
+			wpos_ = 0;
+			rpos_ = 0;
+		}
+
 		~EasyRingbuffer() { _deallocate(buffer_,size_); }
 
 		template<typename T> void append(T val) 

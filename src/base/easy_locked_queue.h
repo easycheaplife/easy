@@ -37,6 +37,27 @@ namespace easy
 			return __ret;
 		}
 
+		_Type* allocate(_Key __key1,_Key __key2)
+		{
+			_Type* __ret = 0;
+			if (free_list_.empty())
+			{
+				__ret = new _Type(__key1,__key2);
+			}
+			else
+			{
+				lock_.acquire_lock();
+				__ret = free_list_.back();
+				__ret->init(__key1,__key2);
+				free_list_.pop_back();
+#ifdef _DEBUG
+				printf("free_list_ size = %d\n",free_size());
+#endif // _DEBUG
+				lock_.release_lock();
+			}
+			return __ret;
+		}
+
 		void deallcate(_Type* __val)
 		{
 			if (!__val)
@@ -50,6 +71,9 @@ namespace easy
 			}
 			lock_.acquire_lock();
 			free_list_.push_back(__val);
+#ifdef _DEBUG
+			printf("free_list_ size = %d\n",free_size());
+#endif // _DEBUG
 			lock_.release_lock();
 		}
 
@@ -69,6 +93,7 @@ namespace easy
 			{
 				if ((*__it))
 				{
+					(*__it)->clear();
 					delete (*__it);
 					(*__it)  = NULL;
 				}
