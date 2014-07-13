@@ -442,8 +442,6 @@ namespace easy
 			}
 			else
 			{
-				mutex_lock	__lock;
-				__lock.acquire_lock();
 				_Obj* volatile* __my_free_list = _S_free_list + _S_freelist_index(__n);
 				_Obj* volatile __result = *__my_free_list;
 				if (__result == 0)
@@ -455,7 +453,6 @@ namespace easy
 					*__my_free_list = __result -> _M_free_list_link;
 					__ret = __result;
 				}
-				__lock.release_lock();
 			}
 			return __ret;
 		}
@@ -469,13 +466,10 @@ namespace easy
 			}
 			else 
 			{
-				mutex_lock	__lock;
-				__lock.acquire_lock();
 				  _Obj* volatile*  __my_free_list = _S_free_list + _S_freelist_index(__n);
 				  _Obj* __q = (_Obj*)__p;
 				  __q -> _M_free_list_link = *__my_free_list;
 				  *__my_free_list = __q;
-				  __lock.release_lock();
 			}
 		}
 	};
