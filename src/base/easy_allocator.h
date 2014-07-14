@@ -442,8 +442,6 @@ namespace easy
 			}
 			else
 			{
-				mutex_lock	__lock;
-				__lock.acquire_lock();
 				_Obj* volatile* __my_free_list = _S_free_list + _S_freelist_index(__n);
 				_Obj* volatile __result = *__my_free_list;
 				if (__result == 0)
@@ -455,7 +453,6 @@ namespace easy
 					*__my_free_list = __result -> _M_free_list_link;
 					__ret = __result;
 				}
-				__lock.release_lock();
 			}
 			return __ret;
 		}
@@ -469,13 +466,10 @@ namespace easy
 			}
 			else 
 			{
-				mutex_lock	__lock;
-				__lock.acquire_lock();
 				  _Obj* volatile*  __my_free_list = _S_free_list + _S_freelist_index(__n);
 				  _Obj* __q = (_Obj*)__p;
 				  __q -> _M_free_list_link = *__my_free_list;
 				  *__my_free_list = __q;
-				  __lock.release_lock();
 			}
 		}
 	};
@@ -612,26 +606,21 @@ namespace easy
 	template <bool threads, int inst>
 	void* __default_alloc_template<threads, inst>::reallocate(void* __p, size_t __old_sz, size_t __new_sz)
 	{
-		mutex_lock	__lock;
-		__lock.acquire_lock();
 		void* __result;
 		size_t __copy_sz;
 
 		if (__old_sz > (size_t) _MAX_BYTES && __new_sz > (size_t) _MAX_BYTES) 
 		{
-			__lock.release_lock();
 			return(realloc(__p, __new_sz));
 		}
 		if (_S_round_up(__old_sz) == _S_round_up(__new_sz)) 
 		{
-			__lock.release_lock();
 			return(__p);
 		}
 		__result = allocate(__new_sz);
 		__copy_sz = __new_sz > __old_sz? __old_sz : __new_sz;
 		memcpy(__result, __p, __copy_sz);
 		deallocate(__p, __old_sz);
-		__lock.release_lock();
 		return(__result);
 	}
 
