@@ -11,7 +11,7 @@
 *********************************************************************/
 #ifndef easy_thread_mutex_h__
 #define easy_thread_mutex_h__
-#include "easy_allocator.h"
+#include "easy_lock.h"
 #include "easy_base_type.h"
 namespace easy
 {

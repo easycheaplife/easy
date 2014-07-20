@@ -21,20 +21,21 @@ CPPFLAGS = $(CFLAGS)
 #****************************************************************************
 OBJS = easy_main.o
 SRCS = easy_main.cc \
-../stl/stl_map_test.cc \
+../easy_test_allocator.cc\
+#../easy_test_threading.cc \
+#../easy_test_lock.cc\
+#../stl/stl_map_test.cc \
 #../easy_test_dump.cc \
 #../stl/stl_advance_test.cc \
 #../easy_unit_test_template.cc \
 #../easy_test_log.cc \
 #../easy_test_singleton.cc \
 #../easy_test_type_traits.cc \
-#../easy_test_allocator.cc\
 #../easy_test_template.cpp\
 #../easy_test_list.cc\
 #../easy_test_locked_queue.cc\
 #../easy_test_byte_buffer.cc \
 #../easy_test_ring_buffer.cc \
-#../easy_test_threading.cc \
 #../easy_test_stdandard_allocator.cc \
 
 
