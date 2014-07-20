@@ -53,6 +53,7 @@ class widget : public easy::my_alloc
 
 void TestLock::test()
 {
+	std::cout<< "lock test begin" << std::endl;
 	widget* __widget = new widget();
 	delete __widget;
 	easy::mutex_lock	__lock_outer;

@@ -3,7 +3,7 @@
 #if 0
 #include "easy_list.h"
 #else
-#include "easy_allocator.h"
+#include "easy_lock.h"
 #include <list>
 #endif
 #include "easy_cppunit_proxy.h"
@@ -30,14 +30,15 @@ CPPUNIT_TEST_SUITE_REGISTRATION(TestLockQueue);
 //
 // tests implementation
 //
-class Widget : public easy::my_alloc
+class Widget //: public easy::my_alloc
 {
 public:
 	explicit Widget(int __val) 
 	{
 		std::cout << "construction function Widget called!" << std::endl;
 	}
-
+	void init(){}
+	void clear(){}
 	~Widget() 
 	{
 		std::cout << "destruction function Widget called!" << std::endl;
