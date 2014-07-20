@@ -20,8 +20,8 @@ easy_big_int.o \
 easy_log.o \
 easy_exception.o \
 easy_util.o \
-#easy_thread_mutex.o \
 easy_threading.o \
+#easy_thread_mutex.o \
 easy_atomic_op.o
 
 SRCS = $(INCS)/myadd.cc \
@@ -30,8 +30,8 @@ $(INCS)/easy_big_int.cc \
 $(INCS)/easy_log.cc \
 $(INCS)/easy_exception.cc \
 $(INCS)/easy_util.cc \
-#$(INCS)/easy_thread_mutex.cc \
 $(INCS)/easy_threading.cc \
+#$(INCS)/easy_thread_mutex.cc \
 $(INCS)/easy_atomic_op.cc
 
 #	OBJS := $(addsuffix .o,$(basename ${SRCS}))

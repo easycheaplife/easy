@@ -16,6 +16,10 @@
 #endif //__WINDOWS
 #endif //WIN32
 
+#if defined __LINUX 
+#include <stddef.h>
+#endif //__LINUX
+
 #ifndef __EASY_ASSERTIONS
 # include <stdio.h>
 # define __easy_assert(expr) \

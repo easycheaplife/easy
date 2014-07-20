@@ -16,7 +16,7 @@
 #include <process.h>
 #elif __LINUX
 #include <pthread.h>
-#endif 
+#endif //__WINDOWS
 
 #ifndef easy_atomic_op_h__
 #include "easy_atomic_op.h"
