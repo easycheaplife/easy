@@ -65,7 +65,7 @@ int main(int argc, char** argv)
 	//  -x=CLASS[::TEST]    run all except the test class CLASS or member test CLASS::TEST
 	//  -f=FILE             save output in file FILE instead of stdout
 	//  -m                  monitor test(s) execution
-	const char *fileName = "..\\log\\easy_unit_test.log";
+	const char *fileName = "../log/easy_unit_test.log";
 	const char *testName = "";
 	const char *xtestName = "";
 	bool doMonitoring = true;

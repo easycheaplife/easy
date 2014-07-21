@@ -23,6 +23,8 @@
 # for win32
 *.sdf
 *.opensdf
+*.pdb
+bin
 Debug/
 core.*
 src/test/cppunit/easy_main

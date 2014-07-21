@@ -1,11 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\src\database\easy_mysql_connection.cc" />
     <ClCompile Include="..\src\base\easy_util.cc" />
-    <ClCompile Include="..\src\database\easy_query_result.cc" />
-    <ClCompile Include="..\src\database\easy_field.cc" />
-    <ClCompile Include="..\src\database\easy_prepared_statement.cc" />
     <ClCompile Include="..\src\base\easy_big_int.cc" />
     <ClCompile Include="..\src\main\easy_main.cc">
       <Filter>test</Filter>
@@ -14,20 +10,12 @@
     <ClCompile Include="..\src\base\easy_log.cc" />
     <ClCompile Include="..\src\base\easy_exception.cc" />
     <ClCompile Include="..\src\base\easy_threading.cc" />
-    <ClCompile Include="..\src\test\exception_c\item23.cc">
-      <Filter>test</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\test\exception_c\item21.cc">
+    <ClCompile Include="..\src\test\easy_test_lock.cc">
       <Filter>test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\base\easy_priority_queue.h" />
-    <ClInclude Include="..\src\database\easy_mysql_connection.h" />
     <ClInclude Include="..\src\base\easy_util.h" />
-    <ClInclude Include="..\src\database\easy_query_result.h" />
-    <ClInclude Include="..\src\database\easy_field.h" />
-    <ClInclude Include="..\src\database\easy_prepared_statement.h" />
     <ClInclude Include="..\src\test\cppunit\easy_cppunit_timer.h">
       <Filter>test\cppunit</Filter>
     </ClInclude>

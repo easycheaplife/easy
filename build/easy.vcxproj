@@ -17,26 +17,16 @@
     <ClCompile Include="..\src\base\easy_log.cc" />
     <ClCompile Include="..\src\base\easy_threading.cc" />
     <ClCompile Include="..\src\base\easy_util.cc" />
-    <ClCompile Include="..\src\database\easy_field.cc" />
-    <ClCompile Include="..\src\database\easy_mysql_connection.cc" />
-    <ClCompile Include="..\src\database\easy_prepared_statement.cc" />
-    <ClCompile Include="..\src\database\easy_query_result.cc" />
     <ClCompile Include="..\src\main\easy_main.cc" />
-    <ClCompile Include="..\src\test\exception_c\item21.cc" />
-    <ClCompile Include="..\src\test\exception_c\item23.cc" />
+    <ClCompile Include="..\src\test\easy_test_lock.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\base\easy_atomic_op.h" />
     <ClInclude Include="..\src\base\easy_big_int.h" />
     <ClInclude Include="..\src\base\easy_exception.h" />
     <ClInclude Include="..\src\base\easy_log.h" />
-    <ClInclude Include="..\src\base\easy_priority_queue.h" />
     <ClInclude Include="..\src\base\easy_threading.h" />
     <ClInclude Include="..\src\base\easy_util.h" />
-    <ClInclude Include="..\src\database\easy_field.h" />
-    <ClInclude Include="..\src\database\easy_mysql_connection.h" />
-    <ClInclude Include="..\src\database\easy_prepared_statement.h" />
-    <ClInclude Include="..\src\database\easy_query_result.h" />
     <ClInclude Include="..\src\test\cppunit\easy_cppunit_mini.h" />
     <ClInclude Include="..\src\test\cppunit\easy_cppunit_proxy.h" />
     <ClInclude Include="..\src\test\cppunit\easy_cppunit_timer.h" />
@@ -52,12 +42,14 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -85,7 +77,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;__WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\dep\ExceptionLib;$(SolutionDir)..\dep\mysql\include;$(SolutionDir)..\src\base;$(SolutionDir)..\src\database;$(SolutionDir)..\src\test;$(SolutionDir)..\src\test\cppunit;$(SolutionDir)..\src\test\effective_c;$(SolutionDir)..\dep\boost_1_47_0;$(SolutionDir)..\dep\libevent2016;$(SolutionDir)..\dep\libevent2016\WIN32-Code;$(SolutionDir)..\dep\libevent2016\include;$(SolutionDir)..\dep\ace;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\src\base;$(SolutionDir)..\src\database;$(SolutionDir)..\src\test;$(SolutionDir)..\src\test\cppunit;$(SolutionDir)..\src\test\effective_c;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerOutput>All</AssemblerOutput>
       <EnablePREfast>true</EnablePREfast>
     </ClCompile>
@@ -93,7 +85,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)..\lib;$(SolutionDir)..\dep\mysql\lib\debug;$(SolutionDir)..\dep\ace\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libmysql.lib;ExpLib_d.lib;Shlwapi.lib;libevent.lib;libevent_core.lib;libevent_extras.lib;ws2_32.lib;ACEd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateMapFile>false</GenerateMapFile>
       <HeapReserveSize>
       </HeapReserveSize>

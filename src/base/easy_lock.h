@@ -9,6 +9,7 @@
 *********************************************************************/
 #ifndef easy_lock_h__
 #define easy_lock_h__
+#include <cstddef>
 
 #ifdef WIN32
 #ifndef __WINDOWS
@@ -16,11 +17,6 @@
 #endif //__WINDOWS
 #endif //WIN32
 
-#ifndef __USE_CRITICAL_SECTION
-#define __USE_CRITICAL_SECTION
-#endif // __USE_CRITICAL_SECTION
-
-#include <cstddef>
 #if defined __LINUX && !defined __NO_THREAD
 #include <pthread.h>
 #include <unistd.h>
@@ -31,7 +27,7 @@
 #define	__EASY_WIN_THREAD
 #elif defined __NO_THREAD
 #define	__EASY_NO_THREAD
-#endif
+#endif //__LINUX
 
 namespace easy
 {
@@ -111,28 +107,11 @@ namespace easy
 	}
 #endif //__EASY_WIN_THREAD/
 
-	template <int __inst>
-	struct mutex_spin 
-	{
-		enum { __low_max = 30, __high_max = 1000 };
-		// Low if we suspect uniprocessor, high for multiprocessor.
-
-		static unsigned __max;
-		static unsigned __last;
-	};
-
-	template <int __inst>
-	unsigned mutex_spin<__inst>::__max = mutex_spin<__inst>::__low_max;
-
-	template <int __inst>
-	unsigned mutex_spin<__inst>::__last = 0;
-
 	struct mutex_lock
 	{
 		mutex_lock() { initialize(); }
 		~mutex_lock() { uninitialize(); }
 #ifdef __EASY_WIN_THREAD
-#ifdef __USE_CRITICAL_SECTION
 		//	we also use windows  CRITICAL SECTION and spin lock to implement it.
 		CRITICAL_SECTION lock_;
 		//	set the spin count times is 4000,that means after check 4000 times, if we can not visit the 
@@ -142,85 +121,6 @@ namespace easy
 		int tryacquire_lock() { TryEnterCriticalSection(&lock_); return 0; }
 		int release_lock() { LeaveCriticalSection(&lock_); return 0; }
 		void uninitialize() { DeleteCriticalSection(&lock_); }
-#else
-		// It should be relatively easy to get this to work on any modern Unix.
-		volatile	unsigned long lock_;
-		void initialize() { lock_ = 0;}
-		static void nsec_sleep(int __log_nsec)
-		{
-			if (__log_nsec <= 20)
-			{
-				Sleep(0);
-			}
-			else
-			{
-				Sleep( 1 << (__log_nsec - 20));
-			}
-		}
-
-		int acquire_lock()
-		{
-			volatile unsigned long* __lock = &this->lock_;
-			if (!_Atomic_swap((unsigned long*)__lock,1))
-			{ 
-				return 0;
-			}
-			unsigned __my_spin_max = mutex_spin<0>::__max;		//	30
-			unsigned __my_last_spins = mutex_spin<0>::__last;	//	0
-			//	no matter the value of __junk
-			volatile unsigned __junk = 17;	
-			unsigned __i;
-			for (__i = 0; __i < __my_spin_max; ++__i)
-			{
-				if (__i < __my_spin_max/2 || *__lock)
-				{
-					//	__junk ^ 4
-					__junk *= __junk;
-					__junk *= __junk;
-					__junk *= __junk;
-					__junk *= __junk;
-					continue;
-				}
-				//	when __lock is 0,record the value __i and return 
-				if (!_Atomic_swap((unsigned long*)__lock, 1))
-				{
-					// got it!
-					// Spinning worked.  Thus we're probably not being scheduled
-					// against the other process with which we were contending.
-					// Thus it makes sense to spin longer the next time.
-					mutex_spin<0>::__last = __i;
-					mutex_spin<0>::__max = mutex_spin<0>::__high_max;	//	1000
-					return 0;
-				}
-			}
-			//	waiting until the value of __lock is 0, no time out
-			mutex_spin<0>::__last = mutex_spin<0>::__low_max;			//	30
-			for (__i = 0; ; ++__i)
-			{
-				int __log_nsec = __i + 6;
-				if (__log_nsec > 27)
-				{
-					__log_nsec = 27;
-				}
-				if (!_Atomic_swap((unsigned long*)__lock,1))
-				{
-					return 0;
-				}
-				nsec_sleep(__log_nsec);
-			}
-			return 0;
-		}
-
-		int tryacquire_lock() {  return 0; }
-
-		int release_lock()
-		{
-			volatile unsigned long* __lock = &this->lock_;
-			*__lock = 0;
-			return 0;	
-		}
-		void uninitialize() { }
-#endif //__USE_CRITICAL_SECTION
 #elif defined __EASY_PTHREAD
 		pthread_mutex_t lock_;
 		void initialize()   { pthread_mutex_init(&lock_, NULL); }

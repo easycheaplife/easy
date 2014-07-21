@@ -8,6 +8,7 @@
 //
 //#define __USE_CRITICAL_SECTION
 //#define __NO_THREAD
+
 #define MAX_REPEAT_COUNT		10000000
 
 #ifndef __WINDOWS
@@ -23,12 +24,12 @@ class TestLock : public CPPUNIT_NS::TestCase
 #if 0
 	CPPUNIT_IGNORE;
 #endif
-	//CPPUNIT_TEST(test);
-	//CPPUNIT_TEST(macro_test);
-	//CPPUNIT_TEST(mutex_lock);
-	//CPPUNIT_TEST(spin_lock);
-	//CPPUNIT_TEST(spin_lock_critical_section);
-	//CPPUNIT_TEST(spin_lock_mine);
+	CPPUNIT_TEST(test);
+	CPPUNIT_TEST(macro_test);
+	CPPUNIT_TEST(mutex_lock);
+	CPPUNIT_TEST(spin_lock);
+	CPPUNIT_TEST(spin_lock_critical_section);
+	CPPUNIT_TEST(spin_lock_mine);
 	CPPUNIT_TEST_SUITE_END();
 
 protected:
@@ -94,7 +95,7 @@ LONG __count = 0;
 easy::mutex_lock	__lock1;
 void fun_1()
 {
-#if 1
+#if 0
 	//	TestAllocator::spin_lock 4.186851 msec
 	//	TestAllocator::spin_lock 4.776427 msec
 	//	TestAllocator::spin_lock 5.282202 msec
@@ -126,7 +127,7 @@ void fun_1()
 easy::mutex_lock	__lock2;
 void fun_2()
 {
-#if 1
+#if 0
 	while(easy::_Atomic_swap((unsigned long*)&__resource_in_use,TRUE) == TRUE)
 	{
 		//	use the resource
