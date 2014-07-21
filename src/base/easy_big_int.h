@@ -20,7 +20,7 @@
 
 #ifndef easy_ref_count_object_h__
 #include "easy_ref_count_object.h"
-#endif easy_ref_count_object_h__
+#endif //easy_ref_count_object_h__
 
 
 namespace easy

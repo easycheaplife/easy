@@ -89,6 +89,7 @@ namespace easy
 #ifdef __WINDOWS
 		return  GetThreadPriority(thread_handle_);
 #elif defined __LINUX
+		return kIdle;
 #endif //__WINDOWS
 	}
 
@@ -104,7 +105,10 @@ namespace easy
 	{
 		if (!p)
 		{
-			return 0;
+#ifdef __WINDOWS
+		return 0;
+#elif defined __LINUX
+#endif //__WINDOWS
 		}
 		EasyThread* _this = (EasyThread*)p;
 		if (_this)
@@ -113,6 +117,10 @@ namespace easy
 		}
 		_this->Stop();
 		return 0;
+#ifdef __WINDOWS
+		return 0;
+#elif defined __LINUX
+#endif //__WINDOWS
 	}
 
 	EasyThread::~EasyThread()

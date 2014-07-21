@@ -120,7 +120,7 @@ namespace easy
 
 		easy_int32 priority() const ;
 
-		~EasyThread();
+		virtual ~EasyThread();
 
 	private:
 		virtual easy_int32 _Run( void* p ) = 0;

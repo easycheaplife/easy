@@ -81,6 +81,7 @@ void TestLock::mutex_lock()
 	unsigned long	__l1 = 10;
 	unsigned long	__l2 = 20;
 	unsigned long	__l3 = easy::_Atomic_swap(&__l1,__l2);
+	std::cout << "__l3 " << __l3 << std::endl;
 	easy::mutex_lock  __lock;
 	__lock.acquire_lock();
 	__lock.release_lock();

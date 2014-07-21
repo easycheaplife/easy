@@ -48,6 +48,8 @@ namespace easy
 	protected:
 		/// Default constructor.
 		EasySingleton (void){ }
+		
+		virtual ~EasySingleton(){}
 
 		/// Get pointer to the Singleton instance.
 		static EasySingleton<TYPE> *&_instance_i (void)

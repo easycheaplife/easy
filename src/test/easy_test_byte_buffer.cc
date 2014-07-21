@@ -58,6 +58,7 @@ void TestByteBuffer::test()
 	std::vector<easy_uint8>	storage_;
 	storage_.reserve(100);
 	int __capacity = storage_.capacity();
+	std::cout << "__capacity=" << __capacity << std::endl;
 
 	try
 	{
@@ -68,7 +69,7 @@ void TestByteBuffer::test()
 		easy::apply<int>(arr);
 
 		std::string str_arr[] = {"lee","sophia"};
-		//easy::apply<std::string>(str_arr);			//	error
+		easy::apply<std::string>(str_arr);			//	error
 
 		easy::EasyByteBufferException(true,20,30,40);
 
@@ -92,10 +93,11 @@ void TestByteBuffer::test()
 
 		byte_buf << (easy_uint8)10;
 		easy_uint8 val = byte_buf[5];
+		std::cout << "val=" << val << std::endl;
 
 		byte_buf.append(4);
 		byte_buf.append('c');
-		byte_buf.append('tomy');
+		byte_buf.append("tomy");
 		
 		byte_buf.put(1,"sophia");
 
@@ -112,7 +114,8 @@ void TestByteBuffer::test()
 			byte_buf >> j;
 		}
 		
-		const easy_uint8* address = byte_buf.contents();
+		const easy_uint8* __address = byte_buf.contents();
+		std::cout << "__address=" << __address << std::endl;
 		byte_buf.clear();
 
 		easy::EasyByteBuffer byte_buf_temp;
@@ -130,6 +133,7 @@ void TestByteBuffer::test()
 		byte_buf_str << "lee";
 		byte_buf_str.put(0,(unsigned char*)"aihpos",6);
 		const unsigned char* __buff = byte_buf_str.contents();
+		std::cout << "__buff=" << __buff << std::endl;
 	}
 	catch(...)
 	{

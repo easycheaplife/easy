@@ -15,8 +15,9 @@
 #include <stdio.h>
 
 #include "easy_cppunit_timer.h"
-
+#ifdef __WINDOWS
 #pragma warning (disable : 4996)
+#endif //__WINDOWS
 //
 // CppUnit mini file(stream) reporter
 //

@@ -54,6 +54,7 @@ void TestLockQueue::test()
 	Widget* __widget = __queue.allocate(1);
 	__queue.deallcate(__widget);
 	size_t __size = __queue.free_size();
+	std::cout << "__size=" << __size << std::endl;
 	__queue.clear();
 
 	//	explicit specialization
@@ -67,6 +68,10 @@ void TestLockQueue::test()
 	Widget* __widget1 = new Widget(1);
 	__container.insert(1,__widget1);
 	Widget* __find = __container.find(1);
+	if(__find) 
+	{ 
+		// do something 
+	}
 	__container.clear();
 	__container.remove(1);
 	delete __widget1;

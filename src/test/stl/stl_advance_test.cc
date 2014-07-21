@@ -55,4 +55,5 @@ void stl_advance_test::test()
     advance(iList,2);
     cout << "The element is " << *iList << endl;
     dTheDiff = distance( List.begin(), iList);
+	if(dTheDiff){}	//warning: variable ‘dTheDiff’ set but not used [-Wunused-but-set-variable]
 }

@@ -30,7 +30,7 @@ public:
 	using easy_stdand_allocator::operator new;
 	using easy_stdand_allocator::operator delete;
 
-	static void* operator new (std::size_t size, std::ostream& log_stream) throw(std::bad_alloc) { return 0; }
+	static void* operator new (std::size_t size, std::ostream& log_stream) throw(std::bad_alloc) { return NULL; }
 
 	static void operator delete (void* memory, std::ostream& log_stream) throw(std::bad_alloc) { }
 

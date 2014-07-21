@@ -40,9 +40,9 @@ void dump_for_gdb(int __signal)
 		exit(0);
 	}
 	fclose(__file);
-	if(__buf[strlen(__buf) - 1] == '/n')
+	if(__buf[strlen(__buf) - 1] == '\n')	//	warning: multi-character character constant [-Wmultichar]
 	{
-		__buf[strlen(__buf) - 1] = '/0';
+		__buf[strlen(__buf) - 1] = '\0';	//	warning: multi-character character constant [-Wmultichar]
 	}
 	snprintf(__cmd, sizeof(__cmd), "gdb %s %d",__buf, getpid());
 	system(__cmd);

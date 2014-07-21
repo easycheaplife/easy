@@ -52,18 +52,22 @@ void TestList::test()
 	l.push_back(30);
 	l.push_front(100);
 	bool _empty = l.empty();
+	std::cout << "_empty "<< _empty << std::endl;
 	int val = *(l.begin());
 #ifdef __WINDOWS
 	val = *(l.rbegin());
 #elif __LINUX
-
+	if(val){}	//	warning: unused variable ‘val’ [-Wunused-variable]
 #endif
 
 	size_t	size = l.size();
 	size_t	max_size = l.max_size();
-
+	std::cout << "size "<< size << std::endl;
+	std::cout << "max_size "<< max_size << std::endl;
 	int front = l.front();
 	int back = l.back();
+	std::cout << "front "<< front << std::endl;
+	std::cout << "back "<< back << std::endl;
 	l.insert(l.end(),4);
 	l.insert(l.end());
 	std::cout << "before insert" << std::endl;
@@ -242,6 +246,7 @@ void TestList::test()
 	easy::list<int> list6;
 	list6 = list5;
 	bool equal = list6 == list5;
+	std::cout << "equal "<< equal << std::endl;
 }
 
 template<typename T> 

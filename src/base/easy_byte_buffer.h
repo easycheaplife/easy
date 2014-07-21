@@ -38,7 +38,7 @@ namespace easy
 
 		void PrintfPosError() const 
 		{
-				printf("Attempted to %s in EasyByteBuffer (pos: " "%u" " size_: " "%u" ") value with size: " "%u",(add_ ? "put" : "get"), \
+				printf("Attempted to %s in EasyByteBuffer (pos: " "%lu" " size_: " "%lu" ") value with size: " "%lu",(add_ ? "put" : "get"), \
 				pos_, size_, esize_);
 		}
 	private:
@@ -478,6 +478,7 @@ namespace easy
 			b >> k >> v;
 			m.insert(make_pair(k,v));
 		}
+		return b;
 	}
 
 	template<> inline std::string EasyByteBuffer::read<std::string>()

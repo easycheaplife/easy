@@ -49,6 +49,7 @@ void stl_map_test::test()
 		if(__it->second)
 		{
 			int __val_ = __it->first;
+			if(__val_){}	// warning: unused variable ‘__val_’ [-Wunused-variable]
 			//	do nothing
 		}
 	}
@@ -62,6 +63,7 @@ void stl_map_test::test()
 	for(int __i = 0; __i < __max_count; ++__i)
 	{
 		int __val_ = __vec[__i];
+		if(__val_){}	// warning: unused variable ‘__val_’ [-Wunused-variable]
 	}
 	gettimeofday(&__end_timeval, NULL);
 	__end_time = __end_timeval.tv_usec;
@@ -74,6 +76,7 @@ void stl_map_test::test()
 	for(int __i = 0; __i < __max_count; ++__i)
 	{
 		int __val_ = __array[__i];
+		if(__val_){}	// warning: unused variable ‘__val_’ [-Wunused-variable]
 	}
 		gettimeofday(&__end_timeval, NULL);
 	__end_time = __end_timeval.tv_usec;

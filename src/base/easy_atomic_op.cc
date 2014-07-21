@@ -20,6 +20,7 @@ namespace easy
 	long multi_cpu_exchange (volatile long *value, long rhs)
 	{
 		unsigned long addr = reinterpret_cast<unsigned long> (value);
+		if(addr){}	//	warning: unused variable ‘addr’ [-Wunused-variable]
 		//...
 		return rhs;
 
@@ -29,6 +30,7 @@ namespace easy
 	{
 		unsigned long addr = reinterpret_cast<unsigned long> (value);
 		//...
+		if(addr){}	//	warning: unused variable ‘addr’ [-Wunused-variable]
 		return rhs;
 	}
 

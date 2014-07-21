@@ -24,7 +24,7 @@ namespace easy
 		// buf-3 is room for CR/LF/NUL
 #ifdef  __WINDOWS
 		n = _vsnprintf_s(p, BUFFER_LENGTH, sizeof buf - 3, log_context, args); 
-#else __LINUX
+#elif defined __LINUX
 		n = vsnprintf(p, sizeof buf - 3, log_context, args); 
 #endif //__WINDOWS
 		va_end(args);
@@ -39,7 +39,7 @@ namespace easy
 #ifdef __WINDOWS
 #ifdef UNICODE
 		OutputDebugStringW((LPCWSTR)buf);
-#elif ASCII
+#elif defined ASCII
 		OutputDebugStringA(buf);
 #endif // UNICODE
 		SetConsoleColour(level);
@@ -63,7 +63,7 @@ namespace easy
 		// buf-3 is room for CR/LF/NUL
 #ifdef  __WINDOWS
 		n = _vsnprintf_s(p, BUFFER_LENGTH, sizeof buf - 3, log_context, args); 
-#else __LINUX
+#elif defined __LINUX
 		n = vsnprintf(p, sizeof buf - 3, log_context, args); 
 #endif //__WINDOWS
 		va_end(args);
@@ -78,7 +78,7 @@ namespace easy
 #ifdef __WINDOWS
 #ifdef UNICODE
 		OutputDebugStringW((LPCWSTR)buf);
-#elif ASCII
+#elif defined ASCII
 		OutputDebugStringA(buf);
 #endif // UNICODE
 		SetConsoleColour(level_);
@@ -132,7 +132,7 @@ namespace easy
 					break;
 			}
 		}
-#elif __LINUX
+#elif defined __LINUX
 
 #endif //__WINDOWS
 	}
@@ -145,7 +145,7 @@ namespace easy
 
 		std::basic_string <char>::size_type pos = log_file_.find_last_of('.');
 		std::string new_log_file;
-		for (int i = 0; i < pos; ++i)
+		for (int i = 0; i < (int)pos; ++i)
 		{
 			new_log_file += log_file_[i];
 		}
@@ -153,7 +153,7 @@ namespace easy
 		log_file_backup  << new_log_file << "_" << time_to_num << ".log";
 #ifdef __WINDOWS
 		rename(log_file_.c_str(),log_file_backup.str().c_str());
-#elif __LINUX
+#elif defined __LINUX
 		rename(log_file_.c_str(),log_file_backup.str().c_str());
 #endif
 	}

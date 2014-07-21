@@ -207,7 +207,8 @@ namespace easy
 		~_List_base() 
 		{
 			clear();
-			_M_put_node(this->_M_node);
+			//	warning: ¡®_M_put_node¡¯ was not declared in this scope, and no declarations were found by argument-dependent lookup at the point of instantiation [-fpermissive]
+			_List_alloc_base<_Tp, _Alloc,_Alloc_traits<_Tp, _Alloc>::_S_instanceless>::_M_put_node(this->_M_node);
 		}
 
 		void clear();
@@ -222,7 +223,8 @@ namespace easy
 			_List_node<_Tp>* __tmp = __cur;
 			__cur = (_List_node<_Tp>*) __cur->_M_next;
 			_Destroy(&__tmp->_M_data);
-			_M_put_node(__tmp);
+			//	warning: ¡®_M_put_node¡¯ was not declared in this scope, and no declarations were found by argument-dependent lookup at the point of instantiation [-fpermissive]
+			_List_alloc_base<_Tp, _Alloc,_Alloc_traits<_Tp, _Alloc>::_S_instanceless>::_M_put_node(__tmp);	
 		}
 		this->_M_node->_M_next = this->_M_node;
 		this->_M_node->_M_prev = this->_M_node;
