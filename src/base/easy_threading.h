@@ -8,6 +8,9 @@
 	author:		Lee
 	
 	purpose:	about os thread 
+#ifdef __WINDOWS
+#elif defined __LINUX
+#endif //__WINDOWS
 *********************************************************************/
 #ifndef easy_threading_h__
 #define easy_threading_h__
@@ -33,6 +36,14 @@
 #ifndef easy_copy_disabled_h__
 #include "easy_copy_disabled.h"
 #endif //easy_copy_disabled_h__
+
+#ifdef __WINDOWS
+#define __STDCALL		__stdcall
+#define __RETURN_VAL	unsigned int
+#else
+#define __STDCALL	
+#define __RETURN_VAL	void*
+#endif //__WINDOWS
 
 namespace easy
 {
@@ -117,11 +128,10 @@ namespace easy
 #ifdef __WINDOWS
 		HANDLE		thread_handle_;
 		unsigned	thread_id_;
-		static unsigned int __stdcall _ThreadFunction( void* p );
-#elif __LINUX
+#elif defined __LINUX
 		pthread_t	thread_id_;
-		static void*  _ThreadFunction( void* p );
 #endif //__WINDOWS
+	static __RETURN_VAL __STDCALL _ThreadFunction( void* p );
 	};
 }
 #endif // easy_threading_h__

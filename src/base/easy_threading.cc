@@ -17,8 +17,8 @@ namespace easy
 #ifdef __WINDOWS
 		thread_handle_ = INVALID_HANDLE_VALUE;
 		thread_id_ = -1;
-#elif __LINUX
-#endif
+#elif defined __LINUX
+#endif //__WINDOWS
 		Start();
 	}
 
@@ -31,16 +31,16 @@ namespace easy
 			EASY_EXCEPTION( EasyException::kErrorInvalidParams, "_beginthreadex exception!", "_beginthreadex", kExceptionLevText );
 		}
 		thread_handle_ = (HANDLE)res;
-#elif __LINUX
+#elif defined __LINUX
 		pthread_create(&thread_id_,NULL,_ThreadFunction,this);
-#endif
+#endif //__WINDOWS
 	}
 
 	void EasyThread::Suspend()
 	{
 #ifdef __WINDOWS
 		SuspendThread(thread_handle_);
-#elif __LINUX
+#elif defined __LINUX
 
 #endif //__WINDOWS
 	}
@@ -49,7 +49,7 @@ namespace easy
 	{
 #ifdef __WINDOWS
 		ResumeThread(thread_handle_);
-#elif __LINUX
+#elif defined __LINUX
 
 #endif //__WINDOWS
 	}
@@ -67,7 +67,7 @@ namespace easy
 		{
 			res = true;
 		}
-#elif __LINUX
+#elif defined __LINUX
 
 #endif //__WINDOWS
 		return res;
@@ -80,31 +80,27 @@ namespace easy
 		{
 			EASY_EXCEPTION( EasyException::kErrorInvalidParams, "SetPriority exception!", "SetPriority", kExceptionLevText );
 		}
-#elif __LINUX
-#endif
+#elif defined __LINUX
+#endif //__WINDOWS
 	}
 
 	easy_int32 EasyThread::priority() const
 	{
 #ifdef __WINDOWS
 		return  GetThreadPriority(thread_handle_);
-#elif __LINUX
-#endif
+#elif defined __LINUX
+#endif //__WINDOWS
 	}
 
 	void EasyThread::Stop()
 	{
 #ifdef __WINDOWS
 		_endthreadex(0);
-#elif __LINUX
-#endif
+#elif defined __LINUX
+#endif //__WINDOWS
 	}
 
-#ifdef __WINDOWS
-	unsigned int EasyThread::_ThreadFunction( void* p )
-#elif __LINUX
-	void* EasyThread::_ThreadFunction( void* p )
-#endif 
+	__RETURN_VAL __STDCALL EasyThread::_ThreadFunction( void* p )
 	{
 		if (!p)
 		{
@@ -123,8 +119,8 @@ namespace easy
 	{
 #ifdef __WINDOWS
 		CloseHandle(thread_handle_);
-#elif __LINUX
-#endif
+#elif defined __LINUX
+#endif //__WINDOWS
 	}
 
 }

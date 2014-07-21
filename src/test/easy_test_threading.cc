@@ -1,6 +1,11 @@
 #include "easy_cppunit_proxy.h"
 #include "easy_threading.h"
 #include <iostream>
+#ifdef __LINUX
+#include <unistd.h>
+#elif defined __WINDOWS
+#include <windows.h>
+#endif //__LINUX
 //
 // TestCase class
 //
@@ -38,9 +43,9 @@ private:
 			std::cout << index << std::endl;
 #ifdef __LINUX
 			sleep(1);
-#else defined __WINDOWS
+#elif defined __WINDOWS
 			::Sleep(100);
-#endif
+#endif //__LINUX
 		}
 		return 0;
 	}
@@ -55,9 +60,9 @@ void TestThreading::test()
 	{
 #ifdef __LINUX
 			sleep(1);
-#else defined __WINDOWS
+#elif defined __WINDOWS
 			::Sleep(1);
-#endif
+#endif //__LINUX
 	}
 	delete thread;
 }
