@@ -120,4 +120,4 @@ $(OUTPUT): $(OBJS)
 
 .PHONY: clean
 clean:
-	-rm *.o *.a
+	-rm  ../../dep/tinyxml/*.o ../../lib/libtinyxml.a

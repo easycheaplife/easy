@@ -49,5 +49,5 @@ $(OUTPUT): $(OBJS)
 
 .PHONY: clean
 clean:
-	-rm *.o *.a
+	-rm *.o ../../lib/libeasy.a
 	
