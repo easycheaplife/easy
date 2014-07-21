@@ -22,7 +22,7 @@ CPPFLAGS = $(CFLAGS)
 OBJS = easy_main.o
 SRCS = easy_main.cc \
 ../easy_test_lock.cc \
-../easy_test_allocator.cc \
+#../easy_test_allocator.cc \
 ../easy_test_threading.cc \
 ../stl/stl_map_test.cc \
 ../easy_test_dump.cc \

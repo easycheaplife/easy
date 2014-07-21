@@ -23,12 +23,12 @@ class TestLock : public CPPUNIT_NS::TestCase
 #if 0
 	CPPUNIT_IGNORE;
 #endif
-	CPPUNIT_TEST(test);
-	CPPUNIT_TEST(macro_test);
-	CPPUNIT_TEST(mutex_lock);
+	//CPPUNIT_TEST(test);
+	//CPPUNIT_TEST(macro_test);
+	//CPPUNIT_TEST(mutex_lock);
 	//CPPUNIT_TEST(spin_lock);
-	CPPUNIT_TEST(spin_lock_critical_section);
-	CPPUNIT_TEST(spin_lock_mine);
+	//CPPUNIT_TEST(spin_lock_critical_section);
+	//CPPUNIT_TEST(spin_lock_mine);
 	CPPUNIT_TEST_SUITE_END();
 
 protected:

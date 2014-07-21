@@ -42,7 +42,7 @@ namespace easy
 		typedef long	_RC_t;
 #else
 		typedef size_t	_RC_t;
-#endif
+#endif //__EASY_WIN_THREAD
 		//	data member reference count
 		volatile		_RC_t		ref_count_;
 
@@ -51,7 +51,7 @@ namespace easy
 		_Refcount_Base(_RC_t __n) : ref_count_(__n) {  pthread_mutex_init(&ref_count_lock_, 0);}
 #else
 		_Refcount_Base(_RC_t __n) : ref_count_(__n) { }
-#endif
+#endif //__EASY_PTHREAD
 
 #ifdef __EASY_PTHREAD	
 		void incr()	
@@ -73,7 +73,7 @@ namespace easy
 #else	//	no use thread
 		void incr()	{  }
 		_RC_t decr() {  }
-#endif
+#endif //__EASY_WIN_THREAD
 	};
 
 	//	atomic swap on unsigned long
@@ -109,7 +109,7 @@ namespace easy
 		*__p = __q;
 		return __result;
 	}
-#endif
+#endif //__EASY_WIN_THREAD/
 
 	template <int __inst>
 	struct mutex_spin 
@@ -220,7 +220,7 @@ namespace easy
 			return 0;	
 		}
 		void uninitialize() { }
-#endif
+#endif //__USE_CRITICAL_SECTION
 #elif defined __EASY_PTHREAD
 		pthread_mutex_t lock_;
 		void initialize()   { pthread_mutex_init(&lock_, NULL); }
@@ -234,7 +234,7 @@ namespace easy
 		int tryacquire_lock() {  return0; }
 		int release_lock() {  return0; }
 		void uninitialize() { }
-#endif
+#endif //__EASY_PTHREAD
 	};
 
 	struct auto_lock
