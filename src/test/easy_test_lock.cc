@@ -323,7 +323,7 @@ void TestLock::rw_lock()
 	signal(SIGSEGV, dump);
 #endif // __LINUX
 	static const int __time_interval = 1000;
-	if (0)
+	if (1)
 	{
 		srand(time(NULL));
 		static const int __max_thread = rand()%100;

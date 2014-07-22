@@ -178,6 +178,7 @@ namespace easy
 		rw_lock() { initialize(); }
 		~rw_lock() { uninitialize(); }
 #ifdef __EASY_WIN_THREAD
+#if 0
 		//	actually, it will work linux well also.it use c++11 condition_variable,which is cross-platform.
 		//	you also can implement condition_variable use windows event kernel object or posix pthread_cond_t.
 		std::mutex					cont_lock_;
@@ -229,6 +230,15 @@ namespace easy
 			return 0; 
 		}
 		void uninitialize() { }
+#else
+		SRWLOCK	rwlock_;
+		void initialize()   {  InitializeSRWLock(&rwlock_); }
+		int acquire_r_lock() {   AcquireSRWLockShared(&rwlock_); return 0; }
+		int release_r_lock() {   ReleaseSRWLockShared(&rwlock_); return 0; }
+		int acquire_w_lock() {   AcquireSRWLockExclusive(&rwlock_); return 0; }
+		int release_w_lock() {   ReleaseSRWLockExclusive(&rwlock_); return 0; }
+		void uninitialize() { }
+#endif
 #elif defined __EASY_PTHREAD
 		pthread_rwlock_t rwlock_;
 		void initialize()   {  pthread_rwlock_init(&rwlock_, 0); }
