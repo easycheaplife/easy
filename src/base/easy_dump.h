@@ -1,3 +1,4 @@
+#ifdef __LINUX
 #include <stdio.h>
 #include <stdlib.h>
 #include <execinfo.h>	//	for backtrace backtrace_symbols. reference from: http://linux.die.net/man/3/backtrace_symbols
@@ -48,3 +49,4 @@ void dump_for_gdb(int __signal)
 	system(__cmd);
 	exit(0);
 }
+#endif //__LINUX

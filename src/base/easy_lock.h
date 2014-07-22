@@ -10,7 +10,7 @@
 #ifndef easy_lock_h__
 #define easy_lock_h__
 #include <cstddef>
-
+#include <condition_variable>
 #ifdef WIN32
 #ifndef __WINDOWS
 #define __WINDOWS
@@ -117,7 +117,7 @@ namespace easy
 		//	set the spin count times is 4000,that means after check 4000 times, if we can not visit the 
 		//	resource also, just switch the kernel mode. we also can use SetCriticalSectionSpinCount set the spin count times.
 #pragma warning(suppress: 6031)
-		void initialize() { InitializeCriticalSectionAndSpinCount(&lock_,0x000004000); /*InitializeCriticalSection(&lock_);*/ }
+		void initialize() { if (1){ InitializeCriticalSectionAndSpinCount(&lock_,0x000004000);} else {InitializeCriticalSection(&lock_);} }
 		int acquire_lock() { EnterCriticalSection(&lock_); return 0;}
 		int tryacquire_lock() { TryEnterCriticalSection(&lock_); return 0; }
 		int release_lock() { LeaveCriticalSection(&lock_); return 0; }
@@ -150,8 +150,14 @@ namespace easy
 
 	struct spin_lock
 	{
+		spin_lock() { initialize(); }
+		~spin_lock() { uninitialize(); }
 #ifdef __EASY_WIN_THREAD
-
+		void initialize()   {  }
+		int acquire_lock() {  return 0; }
+		int tryacquire_lock() {  return 0; }
+		int release_lock() {  return 0; }
+		void uninitialize() { }
 #elif defined __EASY_PTHREAD
 		pthread_spinlock_t spinlock_;
 		void initialize()   {  pthread_spin_init(&spinlock_, 0); }
@@ -169,15 +175,62 @@ namespace easy
 
 	struct rw_lock
 	{
+		rw_lock() { initialize(); }
+		~rw_lock() { uninitialize(); }
 #ifdef __EASY_WIN_THREAD
-		void initialize()   {   }
-		int acquire_r_lock() { return 0; }
-		int release_r_lock() { return 0; }
-		int acquire_w_lock() { return 0; }
-		int release_w_lock() { return 0; }
-		void uninitialize() {  }
+		//	actually, it will work linux well also.it use c++11 condition_variable,which is cross-platform.
+		//	you also can implement condition_variable use windows event kernel object or posix pthread_cond_t.
+		std::mutex					cont_lock_;
+		std::condition_variable		cont_var_;
+		int							r_cnt_;
+		int							w_cnt_;
+		void initialize()   {  r_cnt_ = 0; w_cnt_ = 0; }
+		int acquire_r_lock() 
+		{ 
+			cont_lock_.lock();
+			while (w_cnt_ > 0)
+			{
+				std::unique_lock<std::mutex> __lk(cont_lock_); 
+				cont_var_.wait(__lk);
+			}
+			++r_cnt_;
+			cont_lock_.unlock();
+			return 0; 
+		}
+		int release_r_lock() 
+		{ 
+			cont_lock_.lock();
+			--r_cnt_;
+			while (0 == r_cnt_)
+			{
+				cont_var_.notify_one();
+			}
+			cont_lock_.unlock();
+			return 0; 
+		}
+		int acquire_w_lock() 
+		{ 
+			cont_lock_.lock();
+			while (r_cnt_ + w_cnt_ > 0)
+			{
+				std::unique_lock<std::mutex> __lk(cont_lock_); 
+				cont_var_.wait(__lk);
+			}
+			++w_cnt_;
+			cont_lock_.unlock();
+			return 0; 
+		}
+		int release_w_lock()
+		{ 
+			cont_lock_.lock();
+			--w_cnt_;
+			cont_var_.notify_all();
+			cont_lock_.unlock();
+			return 0; 
+		}
+		void uninitialize() { }
 #elif defined __EASY_PTHREAD
-		 pthread_rwlock_t rwlock_;
+		pthread_rwlock_t rwlock_;
 		void initialize()   {  pthread_rwlock_init(&rwlock_, 0); }
 		int acquire_r_lock() {  return pthread_rwlock_rdlock(&rwlock_); }
 		int release_r_lock() {  return pthread_rwlock_unlock(&rwlock_); }

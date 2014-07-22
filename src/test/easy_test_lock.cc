@@ -5,7 +5,12 @@
 #include "easy_util.h"
 #include "easy_dump.h"
 #include <iostream>
+#ifdef __LINUX
 #include <stdlib.h>
+#elif defined __WINDOWS
+#include <time.h>
+#endif // __LINUX
+
 //
 // TestCase class
 //
@@ -302,21 +307,31 @@ public:
 
 void TestLock::rw_lock()
 {
+#ifdef __LINUX
 	signal(SIGSEGV, dump);
-	srand(time(NULL));
-	static const int __max_thread = rand()%100;
+#endif // __LINUX
 	static const int __time_interval = 1000;
-	for (int __i = 0; __i < __max_thread; ++__i)
+	if (0)
 	{
-		if(rand() % 2)
+		srand(time(NULL));
+		static const int __max_thread = rand()%100;
+		for (int __i = 0; __i < __max_thread; ++__i)
 		{
-			new read_thread();
+			if(rand() % 2)
+			{
+				new read_thread();
+			}
+			else
+			{
+				new write_thread();
+			}
+			//	some memory will leak
 		}
-		else
-		{
-			new write_thread();
-		}
-		//	some memory will leak
+	}
+	else
+	{
+		new read_thread();
+		new write_thread();
 	}
 	while (true)
 	{
