@@ -3,7 +3,6 @@
 #include <iostream>
 namespace easy
 {
-
 	EasyBigInt::EasyBigInt( easy_uint32 /*= 0*/ u )
 	{
 		easy_uint32 v = u;
@@ -51,6 +50,7 @@ namespace easy
 		ndigits_ = left.ndigits_;
 		for (easy_uint32 i = 0; i < ndigits_; ++i)
 		{
+#pragma warning(suppress: 6386)
 			digits_[i] = left.digits_[i] ;
 		}
 		*this += right;

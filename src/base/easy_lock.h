@@ -116,6 +116,7 @@ namespace easy
 		CRITICAL_SECTION lock_;
 		//	set the spin count times is 4000,that means after check 4000 times, if we can not visit the 
 		//	resource also, just switch the kernel mode. we also can use SetCriticalSectionSpinCount set the spin count times.
+#pragma warning(suppress: 6031)
 		void initialize() { InitializeCriticalSectionAndSpinCount(&lock_,0x000004000); /*InitializeCriticalSection(&lock_);*/ }
 		int acquire_lock() { EnterCriticalSection(&lock_); return 0;}
 		int tryacquire_lock() { TryEnterCriticalSection(&lock_); return 0; }
@@ -130,9 +131,9 @@ namespace easy
 		void uninitialize() { }
 #elif defined __EASY_NO_THREAD
 		void initialize()   {  }
-		int acquire_lock() {  return0; }
-		int tryacquire_lock() {  return0; }
-		int release_lock() {  return0; }
+		int acquire_lock() {  return 0; }
+		int tryacquire_lock() {  return 0; }
+		int release_lock() {  return 0; }
 		void uninitialize() { }
 #endif //__EASY_PTHREAD
 	};
@@ -145,6 +146,40 @@ namespace easy
 	private:
 		void operator=(const auto_lock&);
 		auto_lock(const auto_lock&);
+	};
+
+	struct spin_lock
+	{
+#ifdef __EASY_WIN_THREAD
+
+#elif defined __EASY_PTHREAD
+		pthread_spinlock_t spinlock_;
+		void initialize()   {  pthread_spin_init(&spinlock_, 0); }
+		int acquire_lock() {  return pthread_spin_lock(&spinlock_); }
+		int release_lock() {  return pthread_spin_unlock(&spinlock_); }
+		void uninitialize() { pthread_spin_destroy(&spinlock_); }
+#elif defined __EASY_NO_THREAD
+		void initialize()   {  }
+		int acquire_lock() {  return 0; }
+		int tryacquire_lock() {  return 0; }
+		int release_lock() {  return 0; }
+		void uninitialize() { }
+#endif //__EASY_WIN_THREAD
+	};
+
+	struct rw_lock
+	{
+#ifdef __EASY_WIN_THREAD
+
+#elif defined __EASY_PTHREAD
+		 pthread_rwlock_t rwlock_;
+		void initialize()   {  pthread_rwlock_init(&rwlock_, 0); }
+		int acquire_r_lock() {  return pthread_rwlock_rdlock(&rwlock_); }
+		int release_r_lock() {  return pthread_rwlock_unlock(&rwlock_); }
+		int acquire_w_lock() {  return pthread_rwlock_wrlock(&rwlock_); }
+		int release_w_lock() {  return pthread_rwlock_unlock(&rwlock_); }
+		void uninitialize() { pthread_rwlock_destroy(&rwlock_); }
+#endif //__EASY_WIN_THREAD
 	};
 }
 #endif // easy_lock_h__

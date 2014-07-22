@@ -45,6 +45,7 @@ namespace easy
 			{
 #ifdef __WINDOWS
 #ifdef UNICODE
+#pragma warning(suppress: 6276)
 				::MessageBoxW( NULL, (LPCWSTR)const_cast<char*>(this->GetFullDescription().c_str()), (LPCWSTR)"EXCEPTION", MB_OK );
 #elif ASCII
 				::MessageBoxA( NULL, const_cast<char*>(this->GetFullDescription().c_str()), "EXCEPTION", MB_OK );

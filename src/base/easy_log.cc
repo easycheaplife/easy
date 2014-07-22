@@ -152,10 +152,10 @@ namespace easy
 
 		log_file_backup  << new_log_file << "_" << time_to_num << ".log";
 #ifdef __WINDOWS
+#pragma warning(suppress: 6031)
 		rename(log_file_.c_str(),log_file_backup.str().c_str());
 #elif defined __LINUX
 		rename(log_file_.c_str(),log_file_backup.str().c_str());
 #endif
 	}
-
 }
