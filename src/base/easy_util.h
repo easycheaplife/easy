@@ -37,12 +37,13 @@ namespace easy
 	class Util
 	{
 	public:
-		static void sleep(easy_uint32 __mseconds)
+		static void sleep(easy_uint32 __microseconds)
 		{
 #ifdef __WINDOWS
-			::Sleep(__mseconds);
+			//	unit is mill second
+			::Sleep(__microseconds/1000);
 #elif defined __LINUX
-			usleep(__mseconds);
+			usleep(__microseconds);
 #endif //__WINDOWS
 		}
 	};

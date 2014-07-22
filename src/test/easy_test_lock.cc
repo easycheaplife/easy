@@ -3,7 +3,9 @@
 #include "easy_allocator.h"
 #include "easy_lock.h"
 #include "easy_util.h"
+#include "easy_dump.h"
 #include <iostream>
+#include <stdlib.h>
 //
 // TestCase class
 //
@@ -25,12 +27,14 @@ class TestLock : public CPPUNIT_NS::TestCase
 #if 0
 	CPPUNIT_IGNORE;
 #endif
+#if 0
 	CPPUNIT_TEST(test);
 	CPPUNIT_TEST(macro_test);
 	CPPUNIT_TEST(mutex_lock);
 	CPPUNIT_TEST(spin_lock);
 	CPPUNIT_TEST(spin_lock_critical_section);
 	CPPUNIT_TEST(spin_lock_mine);
+#endif
 	CPPUNIT_TEST(rw_lock);
 	CPPUNIT_TEST_SUITE_END();
 
@@ -66,7 +70,8 @@ void TestLock::test()
 
 	easy::mutex_lock	__inner_lock;
 	easy::auto_lock __lock(__inner_lock);
-	easy::auto_lock __lock2(__inner_lock);	//	will be dead lock if not use __USE_CRITICAL_SECTION
+	if(0)
+	{easy::auto_lock __lock2(__inner_lock);}	//	will be dead lock if not use __USE_CRITICAL_SECTION
 }
 
 void TestLock::macro_test()
@@ -272,6 +277,7 @@ public:
 		for(;;)
 		{
 			rw_lock_test::instance()->shared_task_handler(rw_lock_test::instance());
+			easy::Util::sleep(1000);
 		}
 
 		return 0;
@@ -288,6 +294,7 @@ public:
 		for(;;)
 		{
 			rw_lock_test::instance()->exclusive_task_handler(rw_lock_test::instance());
+			easy::Util::sleep(1000);
 		}
 		return 0;
 	}
@@ -295,12 +302,21 @@ public:
 
 void TestLock::rw_lock()
 {
-	static const int __max_thread = 10;
+	signal(SIGSEGV, dump);
+	srand(time(NULL));
+	static const int __max_thread = rand()%100;
 	static const int __time_interval = 1000;
 	for (int __i = 0; __i < __max_thread; ++__i)
 	{
-		read_thread*		__read_thread = new read_thread;
-		write_thread*		__rwrite_thread = new write_thread;
+		if(rand() % 2)
+		{
+			new read_thread();
+		}
+		else
+		{
+			new write_thread();
+		}
+		//	some memory will leak
 	}
 	while (true)
 	{
