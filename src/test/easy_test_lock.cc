@@ -2,6 +2,7 @@
 #include "easy_threading.h"
 #include "easy_allocator.h"
 #include "easy_lock.h"
+#include "easy_util.h"
 #include <iostream>
 //
 // TestCase class
@@ -30,6 +31,7 @@ class TestLock : public CPPUNIT_NS::TestCase
 	CPPUNIT_TEST(spin_lock);
 	CPPUNIT_TEST(spin_lock_critical_section);
 	CPPUNIT_TEST(spin_lock_mine);
+	CPPUNIT_TEST(rw_lock);
 	CPPUNIT_TEST_SUITE_END();
 
 protected:
@@ -39,6 +41,7 @@ protected:
 	void spin_lock();
 	void spin_lock_critical_section();
 	void spin_lock_mine();
+	void rw_lock();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestLock);
@@ -173,6 +176,7 @@ public:
 		return 0;
 	}
 };
+
 void TestLock::spin_lock()
 {
 	test_thread1*	__thread1 = new test_thread1();
@@ -183,11 +187,7 @@ void TestLock::spin_lock()
 		{
 			break;
 		}
-#ifdef __WINDOWS
-			::Sleep(10);
-#elif defined __LINUX
-		//	sleep(0.001);
-#endif
+		easy::Util::sleep(10);
 	}
 	delete __thread1;
 	delete __thread2;
@@ -218,5 +218,92 @@ void TestLock::spin_lock_mine()
 	{
 		__lock.acquire_lock();
 		__lock.release_lock();
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+class rw_lock_test
+{
+private:
+	easy::rw_lock			rw_lock_;
+	int						share_data_;
+	static rw_lock_test*	inst_;
+public:
+	rw_lock_test():share_data_(0){}
+	static rw_lock_test* instance() 
+	{
+		if (!inst_)
+		{
+			inst_ =  new rw_lock_test();
+		}
+		return inst_;
+	}
+
+	static void destrory() { delete inst_; }
+	void shared_task_handler(void* __arg);
+	void exclusive_task_handler(void* __arg);
+};
+
+rw_lock_test* rw_lock_test::inst_ = NULL;
+void rw_lock_test::shared_task_handler( void* __arg )
+{
+	rw_lock_test* __rw_lock_test = static_cast<rw_lock_test*>(__arg);
+	rw_lock_.acquire_r_lock();
+	std::cout << "read " << share_data_ << std::endl;
+	rw_lock_.release_r_lock();
+}
+
+void rw_lock_test::exclusive_task_handler( void* __arg )
+{
+	rw_lock_test* __rw_lock_test = static_cast<rw_lock_test*>(__arg);
+	rw_lock_.acquire_w_lock();
+	std::cout << "write " << ++share_data_ << std::endl;
+	rw_lock_.release_w_lock();
+}
+
+class read_thread : public easy::EasyThread
+{
+public:
+	read_thread(){}
+	~read_thread() {}
+	easy_int32 _Run( void* p )
+	{
+
+		for(;;)
+		{
+			rw_lock_test::instance()->shared_task_handler(rw_lock_test::instance());
+		}
+
+		return 0;
+	}
+};
+
+class write_thread : public easy::EasyThread
+{
+public:
+	write_thread(){}
+	~write_thread() {}
+	easy_int32 _Run( void* p )
+	{
+		for(;;)
+		{
+			rw_lock_test::instance()->exclusive_task_handler(rw_lock_test::instance());
+		}
+		return 0;
+	}
+};
+
+void TestLock::rw_lock()
+{
+	static const int __max_thread = 10;
+	static const int __time_interval = 1000;
+	for (int __i = 0; __i < __max_thread; ++__i)
+	{
+		read_thread*		__read_thread = new read_thread;
+		write_thread*		__rwrite_thread = new write_thread;
+	}
+	while (true)
+	{
+		easy::Util::sleep(__time_interval);
 	}
 }

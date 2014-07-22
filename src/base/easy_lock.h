@@ -170,7 +170,12 @@ namespace easy
 	struct rw_lock
 	{
 #ifdef __EASY_WIN_THREAD
-
+		void initialize()   {   }
+		int acquire_r_lock() { return 0; }
+		int release_r_lock() { return 0; }
+		int acquire_w_lock() { return 0; }
+		int release_w_lock() { return 0; }
+		void uninitialize() {  }
 #elif defined __EASY_PTHREAD
 		 pthread_rwlock_t rwlock_;
 		void initialize()   {  pthread_rwlock_init(&rwlock_, 0); }

@@ -14,6 +14,12 @@
 #include <vector>
 #include <string>
 
+#ifdef __WINDOWS
+#include <windows.h>
+#elif defined __LINUX
+#include <unistd.h>
+#endif //__WINDOWS
+
 #ifndef easy_base_type_h__
 #include "easy_base_type.h"
 #endif //easy_base_type_h__
@@ -27,5 +33,19 @@ namespace easy
 
 		char* m_str;
 	};
+
+	class Util
+	{
+	public:
+		static void sleep(easy_uint32 __mseconds)
+		{
+#ifdef __WINDOWS
+			::Sleep(__mseconds);
+#elif defined __LINUX
+			usleep(__mseconds);
+#endif //__WINDOWS
+		}
+	};
+
 }
 #endif // easy_util_h__
