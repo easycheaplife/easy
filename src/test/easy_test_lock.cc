@@ -257,17 +257,29 @@ public:
 rw_lock_test* rw_lock_test::inst_ = NULL;
 void rw_lock_test::shared_task_handler( void* __arg )
 {
-	rw_lock_test* __rw_lock_test = static_cast<rw_lock_test*>(__arg);
 	rw_lock_.acquire_r_lock();
-	std::cout << "read " << share_data_ << std::endl;
+	try
+	{
+		std::cout << "read " << share_data_ << std::endl;
+	}
+	catch (...)
+	{
+		rw_lock_.release_r_lock();
+	}
 	rw_lock_.release_r_lock();
 }
 
 void rw_lock_test::exclusive_task_handler( void* __arg )
 {
-	rw_lock_test* __rw_lock_test = static_cast<rw_lock_test*>(__arg);
 	rw_lock_.acquire_w_lock();
-	std::cout << "write " << ++share_data_ << std::endl;
+	try
+	{
+		std::cout << "write " << ++share_data_ << std::endl;
+	}
+	catch (...)
+	{
+		rw_lock_.release_w_lock();
+	}
 	rw_lock_.release_w_lock();
 }
 
@@ -281,7 +293,7 @@ public:
 
 		for(;;)
 		{
-			rw_lock_test::instance()->shared_task_handler(rw_lock_test::instance());
+			rw_lock_test::instance()->shared_task_handler(0);
 			easy::Util::sleep(1000);
 		}
 
@@ -298,7 +310,7 @@ public:
 	{
 		for(;;)
 		{
-			rw_lock_test::instance()->exclusive_task_handler(rw_lock_test::instance());
+			rw_lock_test::instance()->exclusive_task_handler(0);
 			easy::Util::sleep(1000);
 		}
 		return 0;

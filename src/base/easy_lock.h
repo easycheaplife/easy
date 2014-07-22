@@ -10,7 +10,6 @@
 #ifndef easy_lock_h__
 #define easy_lock_h__
 #include <cstddef>
-#include <condition_variable>
 #ifdef WIN32
 #ifndef __WINDOWS
 #define __WINDOWS
@@ -24,6 +23,7 @@
 #define	__EASY_PTHREAD 
 #elif defined __WINDOWS && !defined __NO_THREAD
 #include <Windows.h>
+#include <condition_variable>	//	rw_lock for windows version
 #define	__EASY_WIN_THREAD
 #elif defined __NO_THREAD
 #define	__EASY_NO_THREAD
