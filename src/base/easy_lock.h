@@ -186,7 +186,7 @@ namespace easy
 		int release_w_lock() {   ReleaseSRWLockExclusive(&rwlock_); return 0; }
 		void uninitialize() { }
 #elif defined __EASY_PTHREAD
-#if 1
+#if 0
 		pthread_mutex_t		cont_lock_;
 		pthread_cond_t		cont_var_;
 		int					r_cnt_;
