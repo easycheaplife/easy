@@ -203,14 +203,12 @@ namespace easy
 		EasyByteBuffer& operator << (const std::string& val)
 		{
 			append((easy_uint8 const*)val.c_str(),val.length());
-			append((easy_uint8)0);
 			return *this;
 		}
 
 		EasyByteBuffer& operator << (const easy_char* val)
 		{
 			append((easy_uint8 const *)val, val ?  strlen(val) : 0);
-			append((easy_uint8)0);
 			return *this;
 		}
 
