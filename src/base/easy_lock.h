@@ -178,59 +178,6 @@ namespace easy
 		rw_lock() { initialize(); }
 		~rw_lock() { uninitialize(); }
 #ifdef __EASY_WIN_THREAD
-#if 0
-		//	actually, it will work linux well also.it use c++11 condition_variable,which is cross-platform.
-		//	you also can implement condition_variable use windows event kernel object or posix pthread_cond_t.
-		std::mutex					cont_lock_;
-		std::condition_variable		cont_var_;
-		int							r_cnt_;
-		int							w_cnt_;
-		void initialize()   {  r_cnt_ = 0; w_cnt_ = 0; }
-		int acquire_r_lock() 
-		{ 
-			cont_lock_.lock();
-			while (w_cnt_ > 0)
-			{
-				std::unique_lock<std::mutex> __lk(cont_lock_); 
-				cont_var_.wait(__lk);
-			}
-			++r_cnt_;
-			cont_lock_.unlock();
-			return 0; 
-		}
-		int release_r_lock() 
-		{ 
-			cont_lock_.lock();
-			--r_cnt_;
-			while (0 == r_cnt_)
-			{
-				cont_var_.notify_one();
-			}
-			cont_lock_.unlock();
-			return 0; 
-		}
-		int acquire_w_lock() 
-		{ 
-			cont_lock_.lock();
-			while (r_cnt_ + w_cnt_ > 0)
-			{
-				std::unique_lock<std::mutex> __lk(cont_lock_); 
-				cont_var_.wait(__lk);
-			}
-			++w_cnt_;
-			cont_lock_.unlock();
-			return 0; 
-		}
-		int release_w_lock()
-		{ 
-			cont_lock_.lock();
-			--w_cnt_;
-			cont_var_.notify_all();
-			cont_lock_.unlock();
-			return 0; 
-		}
-		void uninitialize() { }
-#else
 		SRWLOCK	rwlock_;
 		void initialize()   {  InitializeSRWLock(&rwlock_); }
 		int acquire_r_lock() {   AcquireSRWLockShared(&rwlock_); return 0; }
@@ -238,8 +185,56 @@ namespace easy
 		int acquire_w_lock() {   AcquireSRWLockExclusive(&rwlock_); return 0; }
 		int release_w_lock() {   ReleaseSRWLockExclusive(&rwlock_); return 0; }
 		void uninitialize() { }
-#endif
 #elif defined __EASY_PTHREAD
+#if 0
+		pthread_mutex_t		cont_lock_;
+		pthread_cond_t		cont_var_;
+		int					r_cnt_;
+		int					w_cnt_;
+		void initialize()   {  r_cnt_ = 0; w_cnt_ = 0; pthread_mutex_init(&cont_lock_, NULL); pthread_cond_init(&cont_var_, NULL);}
+		int acquire_r_lock() 
+		{ 
+			pthread_mutex_lock(&cont_lock_);
+			while (w_cnt_ > 0)
+			{
+				 pthread_cond_wait(&cont_var_,&cont_lock_);
+			}
+			++r_cnt_;
+			pthread_mutex_unlock(&cont_lock_);
+			return 0; 
+		}
+		int release_r_lock() 
+		{ 
+			pthread_mutex_lock(&cont_lock_);
+			--r_cnt_;
+			if (0 == r_cnt_)
+			{
+				pthread_cond_signal(&cont_var_);
+			}
+			pthread_mutex_unlock(&cont_lock_);
+			return 0; 
+		}
+		int acquire_w_lock() 
+		{ 
+			pthread_mutex_lock(&cont_lock_);
+			while (r_cnt_ + w_cnt_ > 0)
+			{
+				pthread_cond_wait(&cont_var_,&cont_lock_);
+			}
+			++w_cnt_;
+			pthread_mutex_unlock(&cont_lock_);
+			return 0; 
+		}
+		int release_w_lock()
+		{ 
+			pthread_mutex_lock(&cont_lock_);
+			--w_cnt_;
+			pthread_cond_broadcast(&cont_var_);
+			pthread_mutex_unlock(&cont_lock_);
+			return 0; 
+		}
+		void uninitialize() { pthread_mutex_destroy(&cont_lock_); pthread_cond_destroy(&cont_var_);}
+#else
 		pthread_rwlock_t rwlock_;
 		void initialize()   {  pthread_rwlock_init(&rwlock_, 0); }
 		int acquire_r_lock() {  return pthread_rwlock_rdlock(&rwlock_); }
@@ -247,6 +242,7 @@ namespace easy
 		int acquire_w_lock() {  return pthread_rwlock_wrlock(&rwlock_); }
 		int release_w_lock() {  return pthread_rwlock_unlock(&rwlock_); }
 		void uninitialize() { pthread_rwlock_destroy(&rwlock_); }
+#endif
 #endif //__EASY_WIN_THREAD
 	};
 }
