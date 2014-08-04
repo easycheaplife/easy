@@ -19,8 +19,6 @@ purpose:	a ring buffer
 #include "easy_assist.h"
 #endif
 
-#define EXTRA_BUFFER_SIZE		64*1024
-
 namespace easy
 {
 	template<class _Type,class _Alloc >
@@ -67,7 +65,6 @@ namespace easy
 				{
 					memmove(buffer_ + wpos_,src,cnt);
 					wpos_ += cnt;
-					return;
 				}
 				else
 				{
@@ -76,7 +73,6 @@ namespace easy
 						memmove(buffer_ + wpos_, src, size_ - wpos_);
 						memmove(buffer_, src + size_ - wpos_, cnt - (size_ - wpos_));
 						wpos_ = cnt - (size_ - wpos_);
-						return;
 					}
 					else
 					{
@@ -87,36 +83,49 @@ namespace easy
 						size_ = size_ + cnt - (size_ - wpos_);
 						wpos_ += cnt;
 						buffer_ = new_buffer;
-						return;
 					}
 				}
 			}
 			//	case 2: rpos_ > wpos_ 
 			else if(rpos_ > wpos_)
 			{
-				if (rpos_ - wpos_ > cnt)	// >= is ok ?
+				if (rpos_ - wpos_ >= cnt)	
 				{
-					if (rpos_ - wpos_ > cnt)
-					{
-						memmove(buffer_ + wpos_,src,cnt);
-						wpos_ += cnt;
-						return;
-					}
-					else
-					{
-						_Type* new_buffer = _allocate(size_ + cnt - (rpos_ - wpos_) + EXTRA_BUFFER_SIZE);
-						memmove(new_buffer,buffer_,wpos_);
-						memmove(new_buffer + wpos_,src,cnt);
-						memmove(new_buffer + wpos_ + cnt - (rpos_ - wpos_) + EXTRA_BUFFER_SIZE,buffer_ + rpos_,size_ - rpos_);
-						_deallocate(buffer_,size_);
-						rpos_ += cnt - (rpos_ - wpos_) + EXTRA_BUFFER_SIZE;
-						wpos_ += cnt;
-						size_ = size_ + cnt - (rpos_ - wpos_) + EXTRA_BUFFER_SIZE;
-						buffer_ = new_buffer;
-						return;
-					}
+					memmove(buffer_ + wpos_,src,cnt);
+					wpos_ += cnt;
+				}
+				else
+				{
+					reallocate(size_);
+					memmove(buffer_ + wpos_,src,cnt);
+					wpos_ += cnt;
 				}
 			}
+		}
+		
+		void reallocate(size_t __extra_buffer_size)
+		{
+			_Type* new_buffer = _allocate(size_ + __extra_buffer_size);
+			//	case 1: rpos_ <= wpos_
+			if (rpos_ <= wpos_)
+			{
+				size_t __actually_size = wpos_ - rpos_;
+				memmove(new_buffer,buffer_ + rpos_,__actually_size);
+				wpos_ = __actually_size;
+			}
+			//	case 2: rpos_ > wpos_ 
+			else if(rpos_ > wpos_)
+			{
+				size_t __tail_not_read_size = size_ - rpos_; 
+				memmove(new_buffer,buffer_ + rpos_,__tail_not_read_size);
+				size_t __head_not_read_size = wpos_; 
+				memmove(new_buffer + __tail_not_read_size,buffer_,__head_not_read_size);
+				wpos_ = __tail_not_read_size + __head_not_read_size;
+			}
+			rpos_ = 0;
+			_deallocate(buffer_,size_);
+			size_ = size_ + __extra_buffer_size;
+			buffer_ = new_buffer;			
 		}
 
 		EasyRingbuffer& operator << (easy_bool val)

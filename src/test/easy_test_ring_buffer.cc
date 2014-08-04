@@ -3,6 +3,7 @@
 #include "easy_threading.h"
 #include "easy_allocator.h"
 #include <iostream>
+#include <time.h>
 //
 // TestCase class
 //
@@ -13,12 +14,12 @@ class TestRingBuffer : public CPPUNIT_NS::TestCase
 	CPPUNIT_IGNORE;
 #endif
 	//CPPUNIT_TEST(test);
-	CPPUNIT_TEST(press_test);
+	CPPUNIT_TEST(reallocate_test);
 	CPPUNIT_TEST_SUITE_END();
 
 protected:
 	void test();
-	void press_test();
+	void reallocate_test();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestRingBuffer);
@@ -26,6 +27,36 @@ CPPUNIT_TEST_SUITE_REGISTRATION(TestRingBuffer);
 //
 // tests implementation
 //
+// 
+
+static std::string __random_string[] = 
+{
+	"[0x000085e4][T]AdvertisingIndentitifer: '', IdentifierForVendor: '', DeviceName: 'PC', ModelName: 'x86', SystemName: '', SystemVersion: '', HardwareID: '74d435046509'",
+	"nice to meet you!",
+	"It is the tears of the earth that keep here smiles in bloom.",
+	"The mighty desert is burning for the love of a blade of grass who shakes her head and laughs and flies away.",
+	"If you shed tears when you miss the sun, you also miss the stars.",
+	"Her wishful face haunts my dreams like the rain at night.",
+	"Once we dreamt that we were strangers.We wake up to find that we  were dear to each other.",
+	"Sorrow is hushed into peace in my heart like the evening among the silent trees.",
+	"Some unseen fingers, like an idle breeze, are playing upon my heart the music of the ripples.",
+	"Listen, my heart, to the whispers of the world with which it makes love to you.",
+	"Do not seat your love upon a precipice because it is high.",
+	"I sit at my window this morning where the world like a passer-by stops for a moment, nods to me and goes.",
+	"There little thoughts are the rustle of leaves; they have their whisper of joy in my mind.",
+	"What you are you do not see, what you see is your shadow.",
+	"My wishes are fools, they shout across thy song, my Master.Let me but listen.",
+	"They throw their shadows before them who carry their lantern on their back.",
+	"That I exist is  a perpetual surprise which is life.",
+	"We, the rustling leaves, have a voice that answers the storms,but who are you so silent?I am a mere flower.",
+	"Do not blame your food because you have no appetite.",
+	"Success is not final, failure is not fatal: it is the courage to continue that counts.",
+	"I cannot tell why this heart languishes in silence.It is for small needs it never asks, or knows or remembers.",
+	"The bird wishes it were a cloud.The cloud wishes it were a bird."
+};
+
+static int __random_string_size = 22;
+
 easy::EasyRingbuffer<easy_uint8,easy::alloc> buf(10240);
 void TestRingBuffer::test()
 {
@@ -69,40 +100,44 @@ void TestRingBuffer::test()
 	buf.read((easy_uint8*)str_name2_,strlen("sophia"));
 }
 
-class WriteRingBuffer : public easy::EasyThread
+void TestRingBuffer::reallocate_test()
 {
-public:
-	WriteRingBuffer() { }
-	~WriteRingBuffer() {  }
-private:
-	easy_int32 _Run( void* p )
-	{
-		while(1)
-		{
-			static easy_uint32 index = 0;
-			buf << (easy_uint32)sizeof(index);
-			buf << index++;
-#if 1
-			std::cout<< "write size = " << sizeof(index) << " index = " << index << std::endl;
-#endif
-		}
-		return 0;
-	}
-};
+	std::string __str_name = "lee";
+	std::string __str_name2 = "sophia";
+	static const int __buffer_size = 256;
 
-#define MAX_THREAD_NUM	1
-void TestRingBuffer::press_test()
-{
-	WriteRingBuffer* write_ring_buffer = new WriteRingBuffer[MAX_THREAD_NUM];
-	while(1)
+	//	case 1: rpos_ <= wpos_
+	easy::EasyRingbuffer<easy_uint8,easy::alloc> __buf(1024);
+	__buf << __str_name;
+	__buf << __str_name2;
+
+	__buf.reallocate(__buf.size());
+	
+	char  __str_name_[__buffer_size] = {};
+	__buf.read((easy_uint8*)__str_name_,__str_name.size());
+	
+	memset(__str_name_,0,__buffer_size);
+	__buf.read((easy_uint8*)__str_name_,__str_name2.size());
+
+	//	case 2: rpos_ > wpos_ 
+	srand( (unsigned)time(NULL)); 
+	easy::EasyRingbuffer<easy_uint8,easy::alloc> __buf2(256);
+	static int __max_count = 100;
+	size_t __head_size = 0;
+	char __read_buffe[__buffer_size] = {};
+	for (int __i = 0; __i < __max_count; ++__i)
 	{
-		easy_uint32 read_size = 0;
-		buf >> read_size;
-		easy_uint32 index = 0;
-		buf >> index;
-#if 1
-		std::cout<< "read size = " << read_size << " index = " << index << std::endl;
-#endif
+		int __random_index = rand()%__random_string_size;
+		__buf2 << __random_string[__random_index].size();
+		__buf2 << __random_string[__random_index];
+		int __read_flag = rand()%__max_count;
+		if(__read_flag % 2)
+		{
+			__buf2 >> __head_size;
+			memset(__read_buffe,0,__buffer_size);
+			__buf2.read((easy_uint8*)__read_buffe,__head_size);
+			std::cout << __read_buffe << std::endl;
+		}
 	}
-	delete [] write_ring_buffer;
+	
 }

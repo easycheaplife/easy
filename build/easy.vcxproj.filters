@@ -10,7 +10,7 @@
     <ClCompile Include="..\src\base\easy_log.cc" />
     <ClCompile Include="..\src\base\easy_exception.cc" />
     <ClCompile Include="..\src\base\easy_threading.cc" />
-    <ClCompile Include="..\src\test\easy_test_lock.cc">
+    <ClCompile Include="..\src\test\easy_test_ring_buffer.cc">
       <Filter>test</Filter>
     </ClCompile>
   </ItemGroup>
