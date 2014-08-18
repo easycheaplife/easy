@@ -1,4 +1,5 @@
 /*
+  libevent version:V2.0.21
   this is a echo server,which receive packet from client and unpack data,then send back client.it reference 
   from ../../../dep/libevent/sample/hello-world.c.
 
@@ -18,6 +19,7 @@
 #include <stdlib.h>			//	exit,atoi
 #ifndef WIN32
 #include <netinet/in.h>
+#include <fcntl.h>
 # ifdef _XOPEN_SOURCE_EXTENDED
 #  include <arpa/inet.h>
 # endif
@@ -30,8 +32,8 @@
 #include <event2/util.h>
 #include <event2/event.h>
 
-static void listener_cb(struct evconnlistener *, evutil_socket_t,
-    struct sockaddr *, int socklen, void *);
+static void set_noblock(int __fd);
+static void listener_cb(struct evconnlistener *, evutil_socket_t,struct sockaddr *, int socklen, void *);
 static void conn_readcb(struct bufferevent *, void *);
 static void conn_writecb(struct bufferevent *, void *);
 static void conn_eventcb(struct bufferevent *, short, void *);
@@ -95,6 +97,23 @@ main(int argc, char **argv)
 }
 
 static void
+set_noblock(int __fd)
+{
+	int __opts = fcntl(__fd,F_GETFL);  
+	if(0 > __opts)  
+    {  
+      	perror("error at fcntl(sock,F_GETFL)");  
+       	exit(1);  
+    }  
+	 __opts = __opts | O_NONBLOCK;  
+	if( 0 > fcntl(__fd,F_SETFL,__opts) )  
+	{  
+       	perror("error at fcntl(sock,F_SETFL)");  
+       	exit(1);  
+   	}  
+}
+
+static void
 listener_cb(struct evconnlistener *listener, evutil_socket_t fd,
     struct sockaddr *sa, int socklen, void *user_data)
 {
@@ -107,6 +126,7 @@ listener_cb(struct evconnlistener *listener, evutil_socket_t fd,
 		event_base_loopbreak(base);
 		return;
 	}
+	set_noblock(fd);
 	bufferevent_setcb(bev, conn_readcb, NULL/*conn_writecb*/, conn_eventcb, NULL);
 	bufferevent_enable(bev, EV_READ|EV_WRITE|EV_PERSIST);
 }
@@ -116,8 +136,42 @@ conn_readcb(struct bufferevent *bev, void *user_data)
 {
 	struct evbuffer *input = bufferevent_get_input(bev);
 	struct evbuffer *output = bufferevent_get_output(bev);
-	/* Copy all the data from the input buffer to the output buffer. */
+#if 0
+	//copy all the data from the input buffer to the output buffer. 
 	evbuffer_add_buffer(output, input);
+#else
+	//	parse packet
+	int __packet_length = 0;
+	int __log_level = 0;
+	int __frame_number = 0;
+	static const int __packet_head_size = 12;
+	unsigned char __packet_head[__packet_head_size] = {};
+	int __head = 0;
+	unsigned int __guid = 0;
+	//	read packet head and see if there is enough bytes
+	ev_ssize_t __actually_size = evbuffer_copyout(input,__packet_head,__packet_head_size);
+	if(__actually_size == __packet_head_size)
+	{
+		memcpy(&__packet_length,__packet_head,4);
+		memcpy(&__head,__packet_head + 4,4);
+		memcpy(&__guid,__packet_head + 8,4);
+		//	read packet content
+		static const int __max_buffer_size = 1024*8;
+		char __read_buf[__max_buffer_size] = {};
+		int __read_bytes = evbuffer_remove(input,__read_buf,__packet_length + __packet_head_size);
+		if(-1 != __read_bytes)
+		{
+			evbuffer_add(output,__read_buf,__packet_length + __packet_head_size);
+		}
+	}
+	else if(__actually_size < __packet_head_size)
+	{
+#ifdef __DEBUG
+		printf("__actually_size < __packet_head_size __actually_size = %d\n",__actually_size);
+#endif //__DEBUG
+		return;
+	}
+#endif 
 }
 
 static void
