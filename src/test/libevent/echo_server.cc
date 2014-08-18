@@ -127,6 +127,7 @@ listener_cb(struct evconnlistener *listener, evutil_socket_t fd,
 		return;
 	}
 	set_noblock(fd);
+	printf("socket = %d\n",fd);
 	bufferevent_setcb(bev, conn_readcb, NULL/*conn_writecb*/, conn_eventcb, NULL);
 	bufferevent_enable(bev, EV_READ|EV_WRITE|EV_PERSIST);
 }
@@ -187,8 +188,9 @@ conn_writecb(struct bufferevent *bev, void *user_data)
 static void
 conn_eventcb(struct bufferevent *bev, short events, void *user_data)
 {
+	evutil_socket_t __fd = bufferevent_getfd(bev);
 	if (events & BEV_EVENT_EOF) {
-		printf("Connection closed.\n");
+		printf("Connection closed %d.\n",__fd);
 	} else if (events & BEV_EVENT_ERROR) {
 		printf("Got an error on the connection: %s\n",
 		    strerror(errno));/*XXX win32*/
