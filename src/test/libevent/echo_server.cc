@@ -32,7 +32,6 @@
 #include <event2/util.h>
 #include <event2/event.h>
 
-static void set_noblock(int __fd);
 static void listener_cb(struct evconnlistener *, evutil_socket_t,struct sockaddr *, int socklen, void *);
 static void conn_readcb(struct bufferevent *, void *);
 static void conn_writecb(struct bufferevent *, void *);
@@ -96,22 +95,6 @@ main(int argc, char **argv)
 	return 0;
 }
 
-static void
-set_noblock(int __fd)
-{
-	int __opts = fcntl(__fd,F_GETFL);  
-	if(0 > __opts)  
-    {  
-      	perror("error at fcntl(sock,F_GETFL)");  
-       	exit(1);  
-    }  
-	 __opts = __opts | O_NONBLOCK;  
-	if( 0 > fcntl(__fd,F_SETFL,__opts) )  
-	{  
-       	perror("error at fcntl(sock,F_SETFL)");  
-       	exit(1);  
-   	}  
-}
 
 static void
 listener_cb(struct evconnlistener *listener, evutil_socket_t fd,
@@ -126,7 +109,7 @@ listener_cb(struct evconnlistener *listener, evutil_socket_t fd,
 		event_base_loopbreak(base);
 		return;
 	}
-	set_noblock(fd);
+	evutil_make_socket_nonblocking(fd);
 	printf("socket = %d\n",fd);
 	bufferevent_setcb(bev, conn_readcb, NULL/*conn_writecb*/, conn_eventcb, NULL);
 	bufferevent_enable(bev, EV_READ|EV_WRITE|EV_PERSIST);
