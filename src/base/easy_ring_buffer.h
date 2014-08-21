@@ -257,6 +257,69 @@ namespace easy
 			return true;
 		}
 
+		easy_bool pre_read(std::string& des,size_t len)
+		{
+			if (read_finish())
+			{
+				return false;
+			}
+			if (rpos_ < wpos_)
+			{
+				if (wpos_ - rpos_ >= len)
+				{
+#if 0
+					memmove(des,buffer_ + rpos_,len);
+#endif
+					for(int __i = 0; __i < len; ++__i)
+					{
+						des += (buffer_ + rpos_)[__i];
+					}
+				}
+				else
+				{
+					return false;
+				}
+
+			}
+			else if (rpos_ > wpos_)
+			{
+				if (size_ - rpos_ >= len)
+				{
+#if 0
+					memmove(des,buffer_ + rpos_,len);
+#endif
+					for(int __i = 0; __i < len; ++__i)
+					{
+						des += (buffer_ + rpos_)[__i];
+					}
+				}
+				else
+				{
+					//	is enough
+					if(size_ - rpos_ + wpos_ >= len)
+					{
+#if 0
+						memmove(des,buffer_ + rpos_, size_ - rpos_);
+						memmove(des + size_ - rpos_, buffer_, len - (size_ - rpos_));
+#endif
+						for(size_t __i = 0; __i < size_ - rpos_; ++__i)
+						{
+							des += (buffer_ + rpos_)[__i];
+						}
+						for(size_t __j = 0; __j < len - (size_ - rpos_); ++__j)
+						{
+							des += (buffer_)[__j];
+						}
+					}
+					else
+					{
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+
 		easy_bool read(easy_uint8* des,size_t len)
 		{
 			if (read_finish())
@@ -290,6 +353,72 @@ namespace easy
 					{
 						memmove(des,buffer_ + rpos_, size_ - rpos_);
 						memmove(des + size_ - rpos_, buffer_, len - (size_ - rpos_));
+						rpos_ = len - (size_ - rpos_);
+					}
+					else
+					{
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+
+		easy_bool read(std::string& des,size_t len)
+		{
+			if (read_finish())
+			{
+				return false;
+			}
+			if (rpos_ < wpos_)
+			{
+				if (wpos_ - rpos_ >= len)
+				{
+#if 0
+					memmove(des,buffer_ + rpos_,len);
+#endif
+					for(int __i = 0; __i < len; ++__i)
+					{
+						des += (buffer_ + rpos_)[__i];
+					}
+					rpos_ += len;
+				}
+				else
+				{
+					return false;
+				}
+
+			}
+			else if (rpos_ > wpos_)
+			{
+				if (size_ - rpos_ >= len)
+				{
+#if 0
+					memmove(des,buffer_ + rpos_,len);
+#endif
+					for(int __i = 0; __i < len; ++__i)
+					{
+						des += (buffer_ + rpos_)[__i];
+					}
+					rpos_ += len;
+				}
+				else
+				{
+					//	is enough
+					if(size_ - rpos_ + wpos_ >= len)
+					{
+#if 0
+						memmove(des,buffer_ + rpos_, size_ - rpos_);
+						memmove(des + size_ - rpos_, buffer_, len - (size_ - rpos_));
+#endif
+						for(size_t __i = 0; __i < size_ - rpos_; ++__i)
+						{
+							des += (buffer_ + rpos_)[__i];
+						}
+						for(size_t __j = 0; __j < len - (size_ - rpos_); ++__j)
+						{
+							des += (buffer_)[__j];
+						}
 						rpos_ = len - (size_ - rpos_);
 					}
 					else

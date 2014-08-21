@@ -13,7 +13,7 @@ class TestRingBuffer : public CPPUNIT_NS::TestCase
 #if 0
 	CPPUNIT_IGNORE;
 #endif
-	//CPPUNIT_TEST(test);
+	CPPUNIT_TEST(test);
 	CPPUNIT_TEST(reallocate_test);
 	CPPUNIT_TEST_SUITE_END();
 
@@ -98,6 +98,12 @@ void TestRingBuffer::test()
 	char  str_name2_[256];
 	//	buf << str_name2_; error, can not be overload
 	buf.read((easy_uint8*)str_name2_,strlen("sophia"));
+
+	//	test read(std::string& des,size_t len)
+	std::string __read;
+	buf << str_name2;
+	buf.read(__read,strlen("sophia"));
+	int __length = __read.length();
 }
 
 void TestRingBuffer::reallocate_test()
