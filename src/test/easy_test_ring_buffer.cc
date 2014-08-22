@@ -104,6 +104,23 @@ void TestRingBuffer::test()
 	buf << str_name2;
 	buf.read(__read,strlen("sophia"));
 	int __length = __read.length();
+	//	copy __read to str_name2_,just a test
+	int __copy_length = __read.copy(str_name2_,2,1);
+	str_name2_[__copy_length] = '\0';
+	__read = str_name2_;
+
+	//	test std::copy
+	//__read.clear();
+	__read.reserve(100);
+	std::copy(str_name2_,str_name2_ + 2,__read.begin());
+
+	//	test std::string.insert 
+	//__read.clear();
+	strcpy(str_name2_,"sophia");
+	__read.insert(1,str_name2_,3);
+	__read.insert(__read.length(),str_name2_,3);
+	__read.insert(__read.length(),str_name2_ + 1,3);
+	return;
 }
 
 void TestRingBuffer::reallocate_test()

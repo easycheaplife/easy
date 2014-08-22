@@ -270,10 +270,7 @@ namespace easy
 #if 0
 					memmove(des,buffer_ + rpos_,len);
 #endif
-					for(int __i = 0; __i < len; ++__i)
-					{
-						des += (buffer_ + rpos_)[__i];
-					}
+					des.insert(0,(const char*)buffer_ + rpos_,len);
 				}
 				else
 				{
@@ -288,10 +285,7 @@ namespace easy
 #if 0
 					memmove(des,buffer_ + rpos_,len);
 #endif
-					for(int __i = 0; __i < len; ++__i)
-					{
-						des += (buffer_ + rpos_)[__i];
-					}
+					des.insert(0,(const char*)buffer_ + rpos_,len);
 				}
 				else
 				{
@@ -302,14 +296,8 @@ namespace easy
 						memmove(des,buffer_ + rpos_, size_ - rpos_);
 						memmove(des + size_ - rpos_, buffer_, len - (size_ - rpos_));
 #endif
-						for(size_t __i = 0; __i < size_ - rpos_; ++__i)
-						{
-							des += (buffer_ + rpos_)[__i];
-						}
-						for(size_t __j = 0; __j < len - (size_ - rpos_); ++__j)
-						{
-							des += (buffer_)[__j];
-						}
+						des.insert(0,(const char*)buffer_ + rpos_,size_ - rpos_);
+						des.insert(size_ - rpos_,(const char*)buffer_,len - (size_ - rpos_));
 					}
 					else
 					{
@@ -377,10 +365,7 @@ namespace easy
 #if 0
 					memmove(des,buffer_ + rpos_,len);
 #endif
-					for(int __i = 0; __i < len; ++__i)
-					{
-						des += (buffer_ + rpos_)[__i];
-					}
+					des.insert(0,(const char*)buffer_ + rpos_,len);
 					rpos_ += len;
 				}
 				else
@@ -396,10 +381,7 @@ namespace easy
 #if 0
 					memmove(des,buffer_ + rpos_,len);
 #endif
-					for(int __i = 0; __i < len; ++__i)
-					{
-						des += (buffer_ + rpos_)[__i];
-					}
+					des.insert(0,(const char*)buffer_ + rpos_,len);
 					rpos_ += len;
 				}
 				else
@@ -411,14 +393,8 @@ namespace easy
 						memmove(des,buffer_ + rpos_, size_ - rpos_);
 						memmove(des + size_ - rpos_, buffer_, len - (size_ - rpos_));
 #endif
-						for(size_t __i = 0; __i < size_ - rpos_; ++__i)
-						{
-							des += (buffer_ + rpos_)[__i];
-						}
-						for(size_t __j = 0; __j < len - (size_ - rpos_); ++__j)
-						{
-							des += (buffer_)[__j];
-						}
+						des.insert(0,(const char*)buffer_ + rpos_,size_ - rpos_);
+						des.insert(size_ - rpos_,(const char*)buffer_,len - (size_ - rpos_));
 						rpos_ = len - (size_ - rpos_);
 					}
 					else
