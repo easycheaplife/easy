@@ -137,8 +137,10 @@ conn_readcb(struct bufferevent *bev, void *user_data)
 	if(__actually_size == __packet_head_size)
 	{
 		memcpy(&__packet_length,__packet_head,4);
+#if 0
 		memcpy(&__head,__packet_head + 4,4);
 		memcpy(&__guid,__packet_head + 8,4);
+#endif
 		//	read packet content
 		static const int __max_buffer_size = 1024*8;
 		char __read_buf[__max_buffer_size] = {};
