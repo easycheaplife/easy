@@ -120,6 +120,7 @@ void TestRingBuffer::test()
 	__read.insert(1,str_name2_,3);
 	__read.insert(__read.length(),str_name2_,3);
 	__read.insert(__read.length(),str_name2_ + 1,3);
+	__read = __read.c_str() + 1;
 	return;
 }
 
@@ -148,6 +149,7 @@ void TestRingBuffer::reallocate_test()
 	static int __max_count = 100;
 	size_t __head_size = 0;
 	char __read_buffe[__buffer_size] = {};
+	std::string __string_read_buffer;
 	for (int __i = 0; __i < __max_count; ++__i)
 	{
 		int __random_index = rand()%__random_string_size;
@@ -158,8 +160,18 @@ void TestRingBuffer::reallocate_test()
 		{
 			__buf2 >> __head_size;
 			memset(__read_buffe,0,__buffer_size);
-			__buf2.read((easy_uint8*)__read_buffe,__head_size);
-			std::cout << __read_buffe << std::endl;
+			if (0)
+			{
+				__buf2.read((easy_uint8*)__read_buffe,__head_size);
+				std::cout << __read_buffe << std::endl;
+			}
+			else
+			{
+				__string_read_buffer.clear();
+				__buf2.read(__string_read_buffer,__head_size);
+				std::cout << __string_read_buffer << std::endl;
+			}
+			
 		}
 	}
 	
