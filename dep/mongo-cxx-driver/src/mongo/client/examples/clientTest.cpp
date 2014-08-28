@@ -14,7 +14,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
 	  compiler : 
-		g++ -g -o clientTest clientTest.cpp -I../../../ -I/share/source/mongodb-src-r2.6.4/src/third_party -I/share/source/mongodb-src-r2.6.4/src/third_party/boost/boost/thread/pthread -L/share/git/easy/dep/mongo-cxx-driver/build/linux2/normal -L/share/source/mongodb-src-r2.6.4/build/linux2/normal/third_party/boost -L/usr/local/lib -lmongoclient -lboost_filesystem -lboost_system -lboost_thread -lboost_regex
+		g++ -g -o clientTest clientTest.cpp -I../../../ -I/share/source/mongodb-src-r2.6.4/src/third_party -I/share/source/mongodb-src-r2.6.4/src/third_party/boost/boost/thread/pthread -L/share/git/easy/dep/mongo-cxx-driver/build/linux2/normal -L/share/source/mongodb-src-r2.6.4/build/linux2/normal/third_party/boost -L/usr/local/lib -lmongoclient  -lboost_thread -lboost_regex
  */
 	
 /**
