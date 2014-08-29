@@ -1,2 +1,0 @@
-/share/git/easy/src/test/cmake/CMakeFiles/operator.dir
-/share/git/easy/src/test/cmake/src/CMakeFiles/test.dir

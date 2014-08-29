@@ -1,1 +1,0 @@
-/usr/local/bin/c++    -O0 -Wall -g -ggdb  -L../lib     CMakeFiles/test.dir/test.cc.o  -o test -rdynamic ../lib/liboperator.a 
