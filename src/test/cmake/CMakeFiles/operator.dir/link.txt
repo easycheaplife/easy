@@ -1,0 +1,2 @@
+/usr/bin/ar cr lib/liboperator.a  CMakeFiles/operator.dir/share/git/easy/src/base/myadd.cc.o CMakeFiles/operator.dir/share/git/easy/src/base/mysub.cc.o
+/usr/bin/ranlib lib/liboperator.a

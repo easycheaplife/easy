@@ -1,0 +1,1 @@
+/usr/local/bin/c++    -O0 -Wall -g -ggdb  -L../lib -loperator    CMakeFiles/login.dir/test.cc.o  -o login -rdynamic 
