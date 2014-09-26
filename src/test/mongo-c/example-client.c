@@ -1,8 +1,8 @@
 /* 
 	compiler:
-		$gcc -g -o example-client example-client.c -I../../../dep/mongo-c-driver-1.0.0/src/mongoc -I../../../dep/mongo-c-driver-1.0.0/src/libbson/src/bson -L../../../dep/mongo-c-driver-1.0.0/src/libbson/.libs -L../../../dep/mongo-c-driver-1.0.0/.libs  -lbson -lpthread -lmongoc-1.0 
+		$gcc -g -o example-client example-client.c -I../../../dep/mongo-c-driver/src/mongoc -I../../../dep/mongo-c-driver/src/libbson/src/bson -L../../../dep/mongo-c-driver/src/libbson/.libs -L../../../dep/mongo-c-driver/.libs  -lbson -lpthread -lmongoc-1.0 
 	run:
-		$export LD_LIBRARY_PATH=../../../dep/mongo-c-driver-1.0.0/.libs:../../../dep/mongo-c-driver-1.0.0/src/libbson/.libs
+		$export LD_LIBRARY_PATH=../../../dep/mongo-c-driver/.libs:../../../dep/mongo-c-driver/src/libbson/.libs
 		$./example-client
 */
 #include <bson.h>
