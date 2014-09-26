@@ -17,6 +17,7 @@ main (int   argc,
    mongoc_collection_t *collection;
    mongoc_cursor_t *cursor;
    bson_error_t error;
+   bson_oid_t oid;
    const bson_t *doc;
    const char *uristr = "mongodb://192.168.22.61/";
    const char *collection_name = "test";
@@ -48,7 +49,7 @@ main (int   argc,
 
    collection = mongoc_client_get_collection (client, "test", collection_name);
    //	add mongo doc
-   bson_oid_t oid;
+   
    doc = bson_new ();
    bson_oid_init (&oid, NULL);
    BSON_APPEND_OID (doc, "_id", &oid);
