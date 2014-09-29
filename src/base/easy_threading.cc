@@ -88,9 +88,8 @@ namespace easy
 	{
 #ifdef __WINDOWS
 		return  GetThreadPriority(thread_handle_);
-#elif defined __LINUX
-		return kIdle;
 #endif //__WINDOWS
+		return kIdle;
 	}
 
 	void EasyThread::Stop()
