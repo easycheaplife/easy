@@ -1,0 +1,355 @@
+#######################################
+#      CXX Driver Config for MCI      #
+#######################################
+
+## Some variables for convenience:
+
+cxx_driver_variables:
+
+## The basic set of tests to run on most buildvariants
+  basic_test_list: &basic_tests
+    - name: "compile"
+    - name: "unit test"
+    - name: "integration test"
+    - name: "client test"
+
+## Common download urls (merge in as hashes)
+  mongo_download_urls:
+    ubuntu1404: &mongo_url_ubuntu1404
+      mongo_url: "http://downloads.10gen.com/linux/mongodb-linux-x86_64-enterprise-ubuntu1404-2.6.4.tgz"
+    windows64-bit: &mongo_url_windows64
+      mongo_url: "http://downloads.10gen.com/win32/mongodb-win32-x86_64-enterprise-windows-64-2.6.4.zip"
+    rhel55: &mongo_url_rhel55
+      mongo_url: "downloads.mongodb.org/linux/mongodb-linux-x86_64-rhel55-latest.tgz"
+
+## Common mongodb arguments
+  mongodb_arguments:
+    standard: &mongodb_args
+      mongodb_args: "--dbpath /data/db --port 27999 --httpinterface --setParameter=enableTestCommands=1 &"
+
+## Common sets of scons flags
+  scons_flags:
+    standard: &scons_flags_64
+      scons_flags: "--64 -j$(grep -c ^processor /proc/cpuinfo) --ssl --use-sasl-client --sharedclient"
+    dynamic_windows: &scons_flags_64_windows_dynamic
+      scons_flags: "--64 -j$(grep -c ^processor /proc/cpuinfo) --ssl --use-sasl-client --dynamic-windows --sharedclient"
+
+## Common compile flags
+  compile_flags:
+    basic: &compile_flags
+      compile_flags: ""
+    debug: &compile_flags_debug
+      compile_flags: "--dbg=on"
+
+## Paths for Windows builds
+  windows_paths:
+    ## DLL paths
+    dll:
+      dll_msvc2010: &dllpath_msvc2010
+        dllpath: --dllpath="c:\local\boost_1_55_0\lib64-msvc-10.0;c:\openssl\bin;c:\sasl\bin"
+    ## C++ paths
+    cpp:
+      cpp_boost_1_55_0: &cpppath
+        cpppath: --cpppath="c:\local\boost_1_55_0"
+    ## Extras
+    extra:
+      basic_extras: &extrapath
+        extrapath: --extrapath="c:\openssl,c:\sasl"
+    ## Library paths
+    lib:
+      lib_msvc2010: &libpath_msvc2010
+        libpath: --libpath="c:\local\boost_1_55_0\lib64-msvc-10.0"
+
+## Toolchain options for windows
+  windows_toolchains:
+    msvc2010: &toolchain_msvc2010
+      toolchain_flags: --msvc-version=10.0
+    msvc2012: &toolchain_msvc2012
+      toolchain_flags: --msvc-version=11.0
+    msvc2013: &toolchain_msvc2013
+      toolchain_flags: --msvc-version=12.0
+
+## Paths and flags for RHEL 5.5 builds
+  rhel55_fixups:
+    scons:
+      warning_flags: &warning_flags_rhel55
+        # For some reason GCC on RHEL 5.5 gives lots of warnings from its own headers when using
+        # visibility attributes.
+        warning_flags: --disable-warnings-as-errors
+    cpp:
+      cpp_boost: &cpppath_rhel55
+        cpppath: --cpppath="/usr/include/boost141"
+    lib:
+      lib32_boost: &libpath_rhel55_32
+        libpath: --libpath="/usr/lib/boost141"
+      lib64_boost: &libpath_rhel55_64
+        libpath: --libpath="/usr/lib64/boost141"
+
+#######################################
+#            Functions                #
+#######################################
+
+functions:
+  "fetch source" :
+    command: git.get_project
+    params:
+      directory: mongo-cxx-driver
+  "fetch mongodb" :
+    command: shell.exec
+    params:
+      working_dir: "mongo-cxx-driver"
+      script: |
+        set -o verbose
+        set -o errexit
+        curl -s ${mongo_url} --output mongo_enterprise.${ext|tgz}
+        ${decompress} mongo_enterprise.${ext|tgz}
+        cp mongodb*enterprise*/bin/mongod${extension} ./mongod${extension}
+        chmod +x ./mongod${extension}
+  "fetch artifacts" :
+    command: s3.get
+    params:
+      aws_key: ${aws_key}
+      aws_secret: ${aws_secret}
+      remote_file: mongo-cxx-driver/${build_variant}/${revision}/artifacts/mongo-${build_id}.tar.gz
+      bucket: mciuploads
+      extract_to: mongo-cxx-driver
+
+pre:
+  - command: expansions.fetch
+    params:
+      keys:
+        - local_key: "aws_key"
+          remote_key: "project_aws_key"
+        - local_key: "aws_secret"
+          remote_key: "project_aws_secret"
+  - command: shell.exec
+    params:
+      script: |
+        rm -rf "mongo-cxx-driver"
+        rm -rf /data/db
+        mkdir -p /data/db
+
+post:
+  - command: shell.exec
+    params:
+      script: |
+        ${killall_mci|pkill mongo; pkill -9 mongod; pkill -9 mongos; pkill -f buildlogger.py; pkill -f smoke.py}
+
+#######################################
+#               Tasks                 #
+#######################################
+
+tasks:
+    - name: lint
+      commands:
+        - func: "fetch source"
+        - command: shell.exec
+          params:
+            working_dir: "mongo-cxx-driver"
+            script: |
+                set -o errexit
+                set -o verbose
+                ${scons|scons} ${scons_flags} ${warning_flags} ${compile_flags} ${toolchain_flags} ${extrapath} ${dllpath} ${cpppath} ${libpath} lint
+
+    - name: compile
+      commands:
+        - func: "fetch source"
+        - command: shell.exec
+          params:
+            working_dir: "mongo-cxx-driver"
+            script: |
+                set -o errexit
+                set -o verbose
+                ${scons|scons} ${scons_flags} ${warning_flags} ${compile_flags} ${toolchain_flags} ${extrapath} ${dllpath} ${cpppath} ${libpath} all
+        - command: shell.exec
+          params:
+              working_dir: "mongo-cxx-driver"
+              script: |
+                set -o errexit
+                set -o verbose
+                tar -czf ../mongo-cxx-driver.tar.gz .
+        - command: s3.put
+          params:
+            aws_key: ${aws_key}
+            aws_secret: ${aws_secret}
+            local_file: mongo-cxx-driver.tar.gz
+            remote_file: mongo-cxx-driver/${build_variant}/${revision}/artifacts/mongo-${build_id}.tar.gz
+            bucket: mciuploads
+            permissions: public-read
+            content_type: ${content_type|application/x-gzip}
+
+    - name: "unit test"
+      depends_on:
+        - name: "compile"
+      commands:
+        - func: "fetch artifacts"
+        - func: "fetch mongodb"
+        - command: shell.exec
+          params:
+            working_dir: "mongo-cxx-driver"
+            script: |
+              set -o verbose
+              echo "Starting mongod..."
+              ./mongod${extension} ${mongodb_args}
+              ${scons|scons} ${scons_flags} ${warning_flags} ${compile_flags} ${toolchain_flags} ${extrapath} ${dllpath} ${cpppath} ${libpath} test
+              exit_code=$?
+              ${killall_mci|pkill mongo; pkill -9 mongod; pkill -9 mongos; pkill -f buildlogger.py; pkill -f smoke.py} || true
+              exit $exit_code
+
+    - name: "integration test"
+      depends_on:
+        - name: "compile"
+      commands:
+        - func: "fetch artifacts"
+        - func: "fetch mongodb"
+        - command: shell.exec
+          params:
+            working_dir: "mongo-cxx-driver"
+            script: |
+              set -o verbose
+              echo "Starting mongod..."
+              ./mongod${extension} ${mongodb_args}
+              ${scons|scons} ${scons_flags} ${warning_flags} ${compile_flags} ${toolchain_flags} ${extrapath} ${dllpath} ${cpppath} ${libpath} integration
+              exit_code=$?
+              ${killall_mci|pkill mongo; pkill -9 mongod; pkill -9 mongos; pkill -f buildlogger.py; pkill -f smoke.py} || true
+              exit $exit_code
+
+    - name: "client test"
+      depends_on:
+        - name: "compile"
+      commands:
+        - func: "fetch artifacts"
+        - func: "fetch mongodb"
+        - command: shell.exec
+          params:
+            working_dir: "mongo-cxx-driver"
+            script: |
+              set -o verbose
+              echo "Starting mongod..."
+              ./mongod${extension} ${mongodb_args}
+              ${scons|scons} ${scons_flags} ${warning_flags} ${compile_flags} ${toolchain_flags} ${extrapath} ${dllpath} ${cpppath} ${libpath} install-mongoclient # static lib install step
+              install_exit=$?
+              ${scons|scons} ${scons_flags} ${warning_flags} ${compile_flags} ${toolchain_flags} ${extrapath} ${dllpath} ${cpppath} ${libpath} check-install-mongoclient # static build installation header check
+              check_exit=$?
+              ${scons|scons} ${scons_flags} ${warning_flags} ${compile_flags} ${toolchain_flags} ${extrapath} ${dllpath} ${cpppath} ${libpath} smokeClient
+              smoke_exit=$?
+              ${killall_mci|pkill mongo; pkill -9 mongod; pkill -9 mongos; pkill -f buildlogger.py; pkill -f smoke.py}
+              exit $install_exit || $check_exit || $smoke_exit
+
+#######################################
+#           Buildvariants             #
+#######################################
+
+buildvariants:
+
+#######################################
+#         Linux Buildvariants         #
+#######################################
+
+## RHEL 5.5
+
+- name: rhel55
+  display_name: "RHEL 5.5"
+  expansions:
+    <<: *compile_flags
+    <<: *scons_flags_64
+    <<: *warning_flags_rhel55
+    <<: *cpppath_rhel55
+    <<: *libpath_rhel55_64
+    <<: *mongodb_args
+    <<: *mongo_url_rhel55
+  run_on:
+  - rhel55-test
+  tasks: *basic_tests
+
+## Ubuntu 1404
+
+- name: ubuntu1404
+  display_name: "Ubuntu 1404"
+  expansions:
+    <<: *compile_flags
+    <<: *scons_flags_64
+    <<: *mongodb_args
+    <<: *mongo_url_ubuntu1404
+  run_on:
+  - ubuntu1404-test
+  tasks: *basic_tests
+
+## Ubuntu 1404 DEBUG
+
+- name: ubuntu1404-debug
+  display_name: "Ubuntu 1404 DEBUG"
+  expansions:
+    <<: *compile_flags_debug
+    <<: *scons_flags_64
+    <<: *mongodb_args
+    <<: *mongo_url_ubuntu1404
+  run_on:
+  - ubuntu1404-test
+  tasks: *basic_tests
+
+#######################################
+#        Windows Buildvariants        #
+#######################################
+
+## Windows 64-bit (msvc2010)
+
+- name: windows-64-msvc2010
+  display_name: "Windows 64-bit (msvc2010)"
+  expansions:
+    ## basic compilation and installation
+    <<: *compile_flags
+    <<: *scons_flags_64
+    <<: *toolchain_msvc2010
+    <<: *mongodb_args
+    <<: *mongo_url_windows64
+    ## additional paths for windows builds
+    <<: *dllpath_msvc2010
+    <<: *libpath_msvc2010
+    <<: *extrapath
+    <<: *cpppath
+    extension: ".exe"
+    scons: scons.bat
+  run_on:
+  - windows-64-test
+  tasks: *basic_tests
+
+## Windows 64-bit DEBUG DYNAMIC (msvc2010)
+
+- name: windows-64-msvc2010-debug
+  display_name: "Windows 64-bit Debug Dynamic (msvc2010)"
+  expansions:
+    <<: *compile_flags_debug
+    <<: *scons_flags_64_windows_dynamic
+    <<: *toolchain_msvc2010
+    <<: *mongodb_args
+    <<: *mongo_url_windows64
+    <<: *dllpath_msvc2010
+    <<: *libpath_msvc2010
+    <<: *extrapath
+    <<: *cpppath
+    extension: ".exe"
+    scons: scons.bat
+  run_on:
+  - windows-64-test
+  tasks: *basic_tests
+
+## Windows 64-bit (msvc2013)
+
+- name: windows-64-msvc2013
+  display_name: "Windows 64-bit (msvc2013)"
+  expansions:
+    <<: *compile_flags
+    <<: *scons_flags_64_windows_dynamic
+    <<: *toolchain_msvc2013
+    <<: *mongodb_args
+    <<: *mongo_url_windows64
+    <<: *dllpath_msvc2010 # For now, we use the VC 10 boost because that is what is installed.
+    <<: *libpath_msvc2010 # Ditto
+    <<: *extrapath
+    <<: *cpppath
+    extension: ".exe"
+    scons: scons.bat
+  run_on:
+  - windows-64-vs2013-test
+  tasks: *basic_tests
