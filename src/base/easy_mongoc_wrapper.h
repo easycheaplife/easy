@@ -41,7 +41,7 @@ namespace easy
 
 		bool collection_insert(const char* __collection_name,bson_t* __doc);
 
-		mongoc_cursor_t* collection_find(const char* __collection_name,bson_t& __query);
+		mongoc_cursor_t* collection_find(const char* __collection_name,bson_t* __query);
 
 		static MongocWrapper* instance ();
 

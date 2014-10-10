@@ -72,18 +72,19 @@ namespace easy
 		return __result;
 	}
 
-	mongoc_cursor_t* MongocWrapper::collection_find( const char* __collection_name, bson_t& __query )
+	mongoc_cursor_t* MongocWrapper::collection_find( const char* __collection_name, bson_t* __query )
 	{
 		//	find a doc
-		return mongoc_collection_find (get_collection(__collection_name),
+		mongoc_cursor_t* __cursor = mongoc_collection_find (get_collection(__collection_name),
 			MONGOC_QUERY_NONE,
 			0,
 			0,
 			0,
-			&__query,
+			__query,
 			NULL,  /* Fields, NULL for all. */
 			NULL); /* Read Prefs, NULL for default */
+		bson_destroy (__query);
+		return __cursor;
 	}
-
 }
 
