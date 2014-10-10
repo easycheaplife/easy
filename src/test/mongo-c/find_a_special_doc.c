@@ -24,10 +24,9 @@ main (int   argc,
 
     client = mongoc_client_new ("mongodb://localhost:27017/");
     collection = mongoc_client_get_collection (client, "test", "test");
+	query = bson_new ();
+    BSON_APPEND_UTF8 (query, "lee", "lee");
     cursor = mongoc_collection_find (collection, MONGOC_QUERY_NONE, 0, 0, 0, query, NULL, NULL);
-
-    query = bson_new ();
-    BSON_APPEND_UTF8 (query, "hello", "world");
 
     while (mongoc_cursor_next (cursor, &doc)) {
         str = bson_as_json (doc, NULL);
