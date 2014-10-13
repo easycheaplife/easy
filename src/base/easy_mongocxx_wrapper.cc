@@ -48,7 +48,7 @@ namespace easy
 		__conn.remove( __ns, mongo::BSONObj() );
 		verify( __conn.findOne( __ns , mongo::BSONObj() ).isEmpty() );
 		// test insert
-		__conn.insert( __ns ,BSON( "name" << "eliot" << "num" << 1 ) );
+		__conn.insert( __ns ,BSON( "name" << "eliot1" << "num1" << 1 ) );
 		verify( ! __conn.findOne( __ns , mongo::BSONObj() ).isEmpty() );
 		//	test mongo code end
 		printf("mongo dxx test\n");

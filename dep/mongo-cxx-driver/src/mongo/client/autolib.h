@@ -48,10 +48,10 @@
 #        endif
 #    else
 #        // Our DLL doesn't have a 'lib' prefix, unlike our static lib
-#        define LIBMONGOCLIENT_LIB_PREFIX "lib"
+#        define LIBMONGOCLIENT_LIB_PREFIX ""
 #        if defined(_DEBUG)
 #            // This is a DLL libmongoclient linking to the debug DLL runtime
-#            define LIBMONGOCLIENT_ABI_ADORNMENT ""
+#            define LIBMONGOCLIENT_ABI_ADORNMENT "-gd"
 #        else
 #            // This is a DLL libmongoclient linking to the retail DLL runtime
 #            define LIBMONGOCLIENT_ABI_ADORNMENT ""
