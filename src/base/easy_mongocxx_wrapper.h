@@ -22,6 +22,9 @@
 //	provide simple mongocxx interface for use
 #ifndef easy_mongocxx_wrapper_h__
 #define easy_mongocxx_wrapper_h__
+#ifdef WIN32
+#include <WinSock2.h>
+#endif //WIN32
 #include "mongo/client/dbclient.h"
 namespace easy
 {
@@ -35,14 +38,12 @@ namespace easy
 		static MongocxxWrapper* instance ();
 
 		static void destrory();
-		
 
 	private:
 		std::string				db_;
 
-		mongo::DBClientConnection conn_;
-
 		static MongocxxWrapper*	inst_;
 	};
 }
+
 #endif // easy_mongocxx_wrapper_h__
