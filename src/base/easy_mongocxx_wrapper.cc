@@ -51,6 +51,7 @@ namespace easy
 		__conn.insert( __ns ,BSON( "name" << "eliot" << "num" << 1 ) );
 		verify( ! __conn.findOne( __ns , mongo::BSONObj() ).isEmpty() );
 		//	test mongo code end
+		printf("mongo dxx test\n");
 	}
 
 	MongocxxWrapper::~MongocxxWrapper()
