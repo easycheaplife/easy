@@ -19,35 +19,23 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  ****************************************************************************/
-//	provide simple mongocxx interface for use
-#ifndef easy_mongocxx_wrapper_h__
-#define easy_mongocxx_wrapper_h__
-#ifdef WIN32
-#include <WinSock2.h>
-#endif //WIN32
-#include "mongo/client/dbclient.h"
+#ifndef easy_mongocxx_unit_h__
+#define easy_mongocxx_unit_h__
+
+#include <string>
+#define __default_collection  "test.test"
 
 namespace easy
 {
-	class MongocxxWrapper 
-	{
+	class MongocxxUnit{
 	public:
+		MongocxxUnit(std::string&	__collection) { collection_ = __collection; }
 
-		MongocxxWrapper(const char* __uri_string = "192.168.22.61:27017");
+		virtual ~MongocxxUnit() {}
 
-		~MongocxxWrapper();
-
-		static MongocxxWrapper* instance ();
-
-		static void destrory();
-
-		mongo::DBClientConnection& db_client_connection() { return conn_; }
-
-	private:
-		mongo::DBClientConnection conn_;
-
-		static MongocxxWrapper*	inst_;
+	protected:
+		std::string		collection_;
 	};
 }
 
-#endif // easy_mongocxx_wrapper_h__
+#endif // easy_mongocxx_unit_h__
