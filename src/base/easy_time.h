@@ -19,6 +19,9 @@
 #include "easy_assist.h"
 #endif
 
+#ifdef __WINDOWS 
+#include <windows.h>
+#endif //__WINDOWS
 namespace easy
 {
 	class EasyTime
@@ -49,7 +52,7 @@ namespace easy
 
 		static easy_uint64 get_cur_sys_time()
 		{
-#ifdef __WINDOWS
+#ifdef __WINDOWS 
 			SYSTEMTIME  __sys;
 			GetLocalTime(&__sys);
 			tm      __time;

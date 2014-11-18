@@ -226,7 +226,7 @@ namespace easy
 				__wheel = wheel4_;
 			}
 			//	2^31
-			else if (__expires < (1 << 0xffffffffUL) )
+			else if (__expires < (0xffffffffUL >> 1) )
 			{
 				__index = ((__expires >> (3 * sbits + ebits)) + wheel5_->index()) & smask;
 				__cur_node = wheel5_->node(__index);

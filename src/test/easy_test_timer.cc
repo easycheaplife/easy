@@ -86,6 +86,9 @@ void AddTimerEvent( easy::base_event* pTimerEvent, int nTickData )
 
 void Testtimer::test()
 {
+	//	other test
+	unsigned long __unsigned_long_number_error = 1 << 0xffffffffUL;
+	unsigned long __unsigned_long_number_correct = 0xffffffffUL >> 1;
 	__timer.init(1000);
 	CTimerTest* firstTimer = new CTimerTest();
 	AddTimerEvent( firstTimer, g_lTickCount);

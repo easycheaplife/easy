@@ -13,6 +13,9 @@
     <ClCompile Include="..\src\test\easy_test_ring_buffer.cc">
       <Filter>test</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\test\easy_test_timer.cc">
+      <Filter>test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\base\easy_util.h" />
