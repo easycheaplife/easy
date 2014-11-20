@@ -17,6 +17,8 @@ class Testtimer : public CPPUNIT_NS::TestCase
 
 protected:
 	void test();
+	
+	void test_time();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(Testtimer);
@@ -96,4 +98,20 @@ void Testtimer::test()
 	{
 		__timer.expires(  );
 	}
+}
+
+void Testtimer::test_time()
+{
+#ifdef __LINUX
+	time_t __now;
+	time(&__now);     
+	printf("time_t __now %llu\n",__now);
+	
+	struct timeval __timeval;
+	gettimeofday(&__timeval, NULL);
+	printf("timeval __timeval.tv_sec %llu\n",__timeval.tv_sec);
+	
+	unsigned long long __result = __now * 1000 + __timeval.tv_usec/1000;
+	printf("__result %llu\n",__result);
+#endif //__LINUX
 }
