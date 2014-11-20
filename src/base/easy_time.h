@@ -21,6 +21,9 @@
 
 #ifdef __WINDOWS 
 #include <windows.h>
+#else
+#include <time.h>
+#include <sys/time.h>
 #endif //__WINDOWS
 namespace easy
 {
@@ -65,7 +68,20 @@ namespace easy
 			time_t __cur_time = _mktime64(&__time);
 			return (easy_uint64)(__cur_time * 1000 + __sys.wMilliseconds);
 #elif __LINUX
-			return 0;
+			/*
+			struct timeval {
+				time_t      tv_sec;     // seconds 
+				suseconds_t tv_usec;    // microseconds 
+			};
+			*/
+#if 0
+			time_t __now;
+			time(&__now);     
+			//	__now is the same value as __timeval.tv_sec
+#endif
+			struct timeval __timeval;
+			gettimeofday(&__timeval, NULL);
+			return (easy_uint64)(__timeval.tv_sec * 1000 + __timeval.tv_usec/1000);
 #endif // __WINDOWS
 		}
 	};
