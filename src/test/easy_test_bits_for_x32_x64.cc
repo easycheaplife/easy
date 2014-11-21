@@ -49,7 +49,21 @@ void TestBits::test()
 	__bits_unsigned_long' value is 4
 	__bits_long_long' value is 8
 	__bits_size_t' value is 8
+	
+	linux 64
+	__bits_char' value is 1
+	__bits_short_int' value is 2
+	__bits_int' value is 4
+	__bits_unsigned_int' value is 4
+	__bits_float' value is 4
+	__bits_double' value is 8
+	__bits_long' value is 8
+	__bits_unsigned_long' value is 8
+	__bits_long_long' value is 8
+	__bits_size_t' value is 8
 	*/
+	
+
 
 	//	base data type
 	int __bits_char = sizeof(char);

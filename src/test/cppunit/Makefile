@@ -37,6 +37,7 @@ SRCS = easy_main.cc \
 ../easy_test_byte_buffer.cc \
 ../easy_test_ring_buffer.cc \
 ../easy_test_stdandard_allocator.cc \
+../easy_test_bits_for_x32_x64.cc \
 
 
 .PHONY : easy_main
