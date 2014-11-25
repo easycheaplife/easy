@@ -18,6 +18,7 @@
 
 #if defined __LINUX 
 #include <stddef.h>
+#include <string.h>
 #endif //__LINUX
 
 #ifndef __EASY_ASSERTIONS
