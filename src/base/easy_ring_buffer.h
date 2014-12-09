@@ -25,13 +25,43 @@
 /*  
  *  a ring buffer to work with network buffer cache 
  *  bugs:
- *  #1	2014-11-19 
+ *  #20001	2014-11-19 
  *  when reading from buffer,wpos_ changed at another thread,but is as a factor for read,that will cause a overflow. 
+ *  #20002  2014-12-05
+ *	data coverage:
+ *	(1)	
+ *		|---------------------------------------------------------|(size)
+ *	
+ *																wpos_
+ *																  ^
+ *	(2)	
+ *		|---------------------------------------------------------|(size)	
+ *	
+ *							   rpos_							wpos_
+ *								 ^								  ^
+ *	(3)	
+ *		|---------------------------------------------------------|(size)
+ *	
+ *							   wpos_
+ *							   rpos_
+ *								 ^          
+ *	(4)	
+ *		|---------------------------------------------------------|(size)
+ *	
+ *							   rpos_				  wpos_(data coverage)
+ *								 ^						^
+ *	(5)	
+ *		|---------------------------------------------------------|(size)
+ *	
+ *	solution:	record the bytes to be read,incr and desc the count of bytes,when writing data,copy the the nmmber of data
+ *	which less than size_ - bytes_,it can avoid data coverage,that happened at the write is quickly fast than read.
+ *	reference http://www.asawicki.info/news_1468_circular_buffer_of_raw_binary_data_in_c.html
  *
  */
 /************************************************************************/
 #include <string>
 #include <string.h>
+#include <iostream>
 #if 0
 #ifndef easy_base_type_h__
 #include "easy_base_type.h"
@@ -42,16 +72,18 @@
 
 namespace easy
 {
-	template<class _Type,class _Alloc >
+	template<class _Type,class _Alloc,class _Lock >
 	class EasyRingbuffer 
 	{
 	public:
 		typedef _Alloc allocator_type;
+		typedef _Lock lock;
 
 		explicit  EasyRingbuffer(size_t size):
 		size_(size),
 			wpos_(0),
-			rpos_(0)
+			rpos_(0),
+			bytes_(0)
 		{
 			buffer_ = _allocate(size_);
 		}
@@ -60,6 +92,7 @@ namespace easy
 		{
 			wpos_ = 0;
 			rpos_ = 0;
+			bytes_ = 0;
 		}
 
 		~EasyRingbuffer() { _deallocate(buffer_,size_); }
@@ -97,6 +130,7 @@ namespace easy
 					}
 					else
 					{
+						buf_lock_.acquire_lock();
 						_Type* new_buffer = _allocate(size_ + cnt - (size_ - wpos_));
 						memmove(new_buffer,buffer_,wpos_);
 						memmove(new_buffer + wpos_, src, cnt);
@@ -104,6 +138,10 @@ namespace easy
 						size_ = size_ + cnt - (size_ - wpos_);
 						wpos_ += cnt;
 						buffer_ = new_buffer;
+#ifdef _DEBUG
+						std::cout << "append reallocate---buffer size = " << size_ << " rpos_ = " << rpos_ << " wpos_ = " << wpos_ << std::endl;
+#endif	//_DEBUG
+						buf_lock_.release_lock();
 					}
 				}
 			}
@@ -138,15 +176,24 @@ namespace easy
 			else if(rpos_ > wpos_)
 			{
 				size_t __tail_not_read_size = size_ - rpos_; 
-				memmove(new_buffer,buffer_ + rpos_,__tail_not_read_size);
+				if(0 != __tail_not_read_size)
+				{
+					memmove(new_buffer,buffer_ + rpos_,__tail_not_read_size);
+				}
 				size_t __head_not_read_size = wpos_; 
-				memmove(new_buffer + __tail_not_read_size,buffer_,__head_not_read_size);
+				if (0 != __head_not_read_size)
+				{
+					memmove(new_buffer + __tail_not_read_size,buffer_,__head_not_read_size);
+				}
 				wpos_ = __tail_not_read_size + __head_not_read_size;
 			}
 			rpos_ = 0;
 			_deallocate(buffer_,size_);
 			size_ = size_ + __extra_buffer_size;
-			buffer_ = new_buffer;			
+			buffer_ = new_buffer;
+#ifdef _DEBUG
+			std::cout << "reallocate---buffer size = " << size_ << " rpos_ = " << rpos_ << " wpos_ = " << wpos_ << std::endl;
+#endif	//_DEBUG
 		}
 
 		EasyRingbuffer& operator << (easy_bool val)
@@ -247,7 +294,7 @@ namespace easy
 			{
 				if (wpos_ - rpos_ >= len)
 				{
-					//	fix bug #1:
+					//	fix bug #20001:
 					if((rpos_ + len) > size_)
 					{
 						return false;
@@ -260,8 +307,66 @@ namespace easy
 				}
 
 			}
-			else if (rpos_ > wpos_)
+			else if (rpos_ >= wpos_)
 			{
+				if (size_ - rpos_ >= len)
+				{
+					memmove(des,buffer_ + rpos_,len);
+				}
+				else
+				{
+					//	is enough
+					if(size_ - rpos_ + wpos_ >= len)
+					{
+						memmove(des,buffer_ + rpos_, size_ - rpos_);
+						memmove(des + size_ - rpos_, buffer_, len - (size_ - rpos_));
+					}
+					else
+					{
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+
+		easy_bool pre_read_4_bug_20002(easy_uint8* des,size_t len)
+		{
+			if(bytes_ < len)
+			{
+				return false;
+			}
+			if(0 == len)
+			{
+				return false;
+			}
+			if (read_finish_4_bug_20002())
+			{
+				return false;
+			}
+			if (rpos_ < wpos_)
+			{
+				if (wpos_ - rpos_ >= len)
+				{
+					//	fix bug #20001:
+					if((rpos_ + len) > size_)
+					{
+						return false;
+					}
+					memmove(des,buffer_ + rpos_,len);
+				}
+				else
+				{
+					return false;
+				}
+
+			}
+			else if (rpos_ >= wpos_)
+			{
+				if (0 == bytes_)
+				{
+					return false;
+				}
 				if (size_ - rpos_ >= len)
 				{
 					memmove(des,buffer_ + rpos_,len);
@@ -293,7 +398,7 @@ namespace easy
 			{
 				if (wpos_ - rpos_ >= len)
 				{
-					//	fix bug #1:
+					//	fix bug #20001:
 					if((rpos_ + len) > size_)
 					{
 						return false;
@@ -309,7 +414,7 @@ namespace easy
 				}
 
 			}
-			else if (rpos_ > wpos_)
+			else if (rpos_ >= wpos_)
 			{
 				if (size_ - rpos_ >= len)
 				{
@@ -339,6 +444,75 @@ namespace easy
 			return true;
 		}
 
+		easy_bool pre_read_4_bug_20002(std::string& des,size_t len)
+		{
+			if(bytes_ < len)
+			{
+				return false;
+			}
+			if(0 == len)
+			{
+				return false;
+			}
+			if (read_finish_4_bug_20002())
+			{
+				return false;
+			}
+			if (rpos_ < wpos_)
+			{
+				if (wpos_ - rpos_ >= len)
+				{
+					//	fix bug #20001:
+					if((rpos_ + len) > size_)
+					{
+						return false;
+					}
+#if 0
+					memmove(des,buffer_ + rpos_,len);
+#endif
+					des.insert(0,(const char*)buffer_ + rpos_,len);
+				}
+				else
+				{
+					return false;
+				}
+
+			}
+			else if (rpos_ >= wpos_)
+			{
+				if (0 == bytes_)
+				{
+					return false;
+				}
+				if (size_ - rpos_ >= len)
+				{
+#if 0
+					memmove(des,buffer_ + rpos_,len);
+#endif
+					des.insert(0,(const char*)buffer_ + rpos_,len);
+				}
+				else
+				{
+					//	is enough
+					if(size_ - rpos_ + wpos_ >= len)
+					{
+#if 0
+						memmove(des,buffer_ + rpos_, size_ - rpos_);
+						memmove(des + size_ - rpos_, buffer_, len - (size_ - rpos_));
+#endif
+						des.insert(0,(const char*)buffer_ + rpos_,size_ - rpos_);
+						des.insert(size_ - rpos_,(const char*)buffer_,len - (size_ - rpos_));
+					}
+					else
+					{
+						return false;
+					}
+				}
+			}
+
+			return true;
+		}
+
 		easy_bool read(easy_uint8* des,size_t len)
 		{
 			if (read_finish())
@@ -348,7 +522,7 @@ namespace easy
 			if (rpos_ < wpos_)
 			{
 				/*	
-				fix bug #1:
+				fix bug #20001:
 					for two thread,include read/write thread, the value of wpos_ maybe changed, you should consider this case:
 					(rpos_ < wpos_) is true, (wpos_ - rpos_ >= len) is false, if wpos_ 's value is not changed, it ok,just return false;
 					(rpos_ < wpos_) is true, (wpos_ - rpos_ >= len) is true because of wpos_ 's value is changed, it dangerous! when memmove called,(rpos_ + len) is more than size_, overflow will happend.
@@ -368,7 +542,7 @@ namespace easy
 				}
 				
 			}
-			else if (rpos_ > wpos_)
+			else if (rpos_ >= wpos_)
 			{
 				if (size_ - rpos_ >= len)
 				{
@@ -393,6 +567,73 @@ namespace easy
 			return true;
 		}
 
+		easy_bool read_4_bug_20002(easy_uint8* des,size_t len)
+		{
+			if(bytes_ < len)
+			{
+				return false;
+			}
+			if(0 == len)
+			{
+				return false;
+			}
+			if (read_finish_4_bug_20002())
+			{
+				return false;
+			}
+			if (rpos_ < wpos_)
+			{
+				/*	
+				fix bug #20001:
+					for two thread,include read/write thread, the value of wpos_ maybe changed, you should consider this case:
+					(rpos_ < wpos_) is true, (wpos_ - rpos_ >= len) is false, if wpos_ 's value is not changed, it ok,just return false;
+					(rpos_ < wpos_) is true, (wpos_ - rpos_ >= len) is true because of wpos_ 's value is changed, it dangerous! when memmove called,(rpos_ + len) is more than size_, overflow will happend.
+				*/
+				if (wpos_ - rpos_ >= len)
+				{
+					if((rpos_ + len) > size_)
+					{
+						return false;
+					}
+					memmove(des,buffer_ + rpos_,len);
+					rpos_ += len;
+				}
+				else
+				{
+					return false;
+				}
+				
+			}
+			else if (rpos_ >= wpos_)
+			{
+				if (0 == bytes_)
+				{
+					return false;
+				}
+				if (size_ - rpos_ >= len)
+				{
+					memmove(des,buffer_ + rpos_,len);
+					rpos_ += len;
+				}
+				else
+				{
+					//	is enough
+					if(size_ - rpos_ + wpos_ >= len)
+					{
+						memmove(des,buffer_ + rpos_, size_ - rpos_);
+						memmove(des + size_ - rpos_, buffer_, len - (size_ - rpos_));
+						rpos_ = len - (size_ - rpos_);
+					}
+					else
+					{
+						return false;
+					}
+				}
+			}
+			decrease_bytes(len);
+			return true;
+		}
+
 		easy_bool read(std::string& des,size_t len)
 		{
 			if (read_finish())
@@ -403,7 +644,7 @@ namespace easy
 			{
 				if (wpos_ - rpos_ >= len)
 				{
-					//	fix bug #1:
+					//	fix bug #20001:
 					if((rpos_ + len) > size_)
 					{
 						return false;
@@ -420,7 +661,7 @@ namespace easy
 				}
 
 			}
-			else if (rpos_ > wpos_)
+			else if (rpos_ >= wpos_)
 			{
 				if (size_ - rpos_ >= len)
 				{
@@ -449,6 +690,78 @@ namespace easy
 					}
 				}
 			}
+			return true;
+		}
+
+		easy_bool read_4_bug_20002(std::string& des,size_t len)
+		{
+			if(bytes_ < len)
+			{
+				return false;
+			}
+			if(0 == len)
+			{
+				return false;
+			}
+			if (read_finish_4_bug_20002())
+			{
+				return false;
+			}
+			if (rpos_ < wpos_)
+			{
+				if (wpos_ - rpos_ >= len)
+				{
+					//	fix bug #20001:
+					if((rpos_ + len) > size_)
+					{
+						return false;
+					}
+#if 0
+					memmove(des,buffer_ + rpos_,len);
+#endif
+					des.insert(0,(const char*)buffer_ + rpos_,len);
+					rpos_ += len;
+				}
+				else
+				{
+					return false;
+				}
+
+			}
+			else if (rpos_ >= wpos_)
+			{
+				if (0 == bytes_)
+				{
+					return false;
+				}
+				if (size_ - rpos_ >= len)
+				{
+#if 0
+					memmove(des,buffer_ + rpos_,len);
+#endif
+					des.insert(0,(const char*)buffer_ + rpos_,len);
+					rpos_ += len;
+				}
+				else
+				{
+					//	is enough
+					if(size_ - rpos_ + wpos_ >= len)
+					{
+#if 0
+						memmove(des,buffer_ + rpos_, size_ - rpos_);
+						memmove(des + size_ - rpos_, buffer_, len - (size_ - rpos_));
+#endif
+						des.insert(0,(const char*)buffer_ + rpos_,size_ - rpos_);
+						des.insert(size_ - rpos_,(const char*)buffer_,len - (size_ - rpos_));
+						rpos_ = len - (size_ - rpos_);
+					}
+					else
+					{
+						return false;
+					}
+				}
+			}
+			decrease_bytes(len);
 			return true;
 		}
 
@@ -524,15 +837,49 @@ namespace easy
 
 		size_t wpos() const { return wpos_; }
 
+		size_t bytes() const { return bytes_;}
+
+		easy_bool read_finish_4_bug_20002() { return wpos_ == rpos_ && 0 == bytes_; }
+
 		easy_bool read_finish() { return wpos_ == rpos_; }
+
+		easy_bool write_full() { return wpos_ == rpos_ && bytes_ >= size_; }
 		
 	public:
 		//	be careful to use,for special uses !
 		_Type* buffer() {return buffer_; }
 
-		void set_rpos(size_t __rpos) { rpos_ = __rpos; }
+		void set_rpos(size_t __rpos) 
+		{ 
+			rpos_ = __rpos; 
+		}
 
-		void set_wpos(size_t __wpos) { wpos_ = __wpos; }
+		void set_wpos(size_t __wpos) 
+		{ 
+			wpos_ = __wpos; 
+		}
+
+		//	fix bug #20002:
+		void set_bytes(size_t __bytes) 
+		{
+			bytes_lock_.acquire_lock();
+			bytes_ = __bytes; 
+			bytes_lock_.release_lock();
+		}
+
+		void increase_bytes(size_t __bytes) 
+		{ 
+			bytes_lock_.acquire_lock();
+			bytes_ += __bytes; 
+			bytes_lock_.release_lock();
+		}
+
+		void decrease_bytes(size_t __bytes)
+		{ 
+			bytes_lock_.acquire_lock();
+			bytes_ -= __bytes;
+			bytes_lock_.release_lock();
+		}
 
 	private:
 		_Type* _allocate(size_t size) 
@@ -553,7 +900,10 @@ namespace easy
 		EasyRingbuffer ( const EasyRingbuffer& );
 		EasyRingbuffer& operator = ( const EasyRingbuffer& );
 	private:
-		size_t			size_;
+		//	fix bug #20002:
+		easy_int32		bytes_;		//	factually, is the total byte to be read.
+
+		size_t			size_;		//	factually,buffer 's size.
 
 		_Type*			buffer_;
 
@@ -562,6 +912,10 @@ namespace easy
 		size_t			rpos_;
 
 		allocator_type	alloc_type_;
+
+		lock bytes_lock_;
+
+		lock buf_lock_;
 	};
 }
 

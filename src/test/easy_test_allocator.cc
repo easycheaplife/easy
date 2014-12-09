@@ -23,6 +23,7 @@ class TestAllocator : public CPPUNIT_NS::TestCase
 	CPPUNIT_TEST(malloc_alloc_template);
 	CPPUNIT_TEST(simple_alloc);
 	CPPUNIT_TEST(debug_alloc);
+	CPPUNIT_TEST(default_alloc_template);
 	CPPUNIT_TEST_SUITE_END();
 
 protected:
@@ -31,6 +32,7 @@ protected:
 	void malloc_alloc_template();
 	void simple_alloc();
 	void debug_alloc();
+	void default_alloc_template();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestAllocator);
@@ -74,4 +76,17 @@ void TestAllocator::debug_alloc()
 {
 	typedef easy::debug_alloc<easy::malloc_alloc> __alloc;
 	__alloc::allocate(128);
+}
+
+void TestAllocator::default_alloc_template()
+{
+	int __alloc_size = 1024*8;
+	easy::alloc __alloc;
+	void* __p = __alloc.allocate(__alloc_size);
+	/*
+	void* __p_new =__alloc.reallocate(__p,__alloc_size,__alloc_size*2);
+	__alloc.deallocate(__p,__alloc_size);
+	__p = __p_new;
+	__alloc.deallocate(__p_new,__alloc_size*2);
+	*/
 }

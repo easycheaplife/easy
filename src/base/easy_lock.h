@@ -117,7 +117,7 @@ namespace easy
 		//	set the spin count times is 4000,that means after check 4000 times, if we can not visit the 
 		//	resource also, just switch the kernel mode. we also can use SetCriticalSectionSpinCount set the spin count times.
 #pragma warning(suppress: 6031)
-		void initialize() { if (1){ InitializeCriticalSectionAndSpinCount(&lock_,0x000004000);} else {InitializeCriticalSection(&lock_);} }
+		void initialize() { if (0){ InitializeCriticalSectionAndSpinCount(&lock_,0x000004000);} else {InitializeCriticalSection(&lock_);} }
 		int acquire_lock() { EnterCriticalSection(&lock_); return 0;}
 		int tryacquire_lock() { TryEnterCriticalSection(&lock_); return 0; }
 		int release_lock() { LeaveCriticalSection(&lock_); return 0; }
