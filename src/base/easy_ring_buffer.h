@@ -29,11 +29,15 @@
  *  when reading from buffer,wpos_ changed at another thread,but is as a factor for read,that will cause a overflow. 
  *  #20002  2014-12-05
  *	data coverage:
- *	(1)	
+ *		
+ *		rpos_
+ *		wpos_
+ *		^
+ *	(1)
  *		|---------------------------------------------------------|(size)
  *	
- *																wpos_
- *																  ^
+ *		rpos_									wpos_
+ *		^										  ^
  *	(2)	
  *		|---------------------------------------------------------|(size)	
  *	
@@ -41,16 +45,20 @@
  *								 ^								  ^
  *	(3)	
  *		|---------------------------------------------------------|(size)
- *	
+
+ *				  wpos_							rpos_
+ *					^							  ^
+ *	(4)	
+ *		|---------------------------------------------------------|(size)
  *							   wpos_
  *							   rpos_
  *								 ^          
- *	(4)	
+ *	(5)	
  *		|---------------------------------------------------------|(size)
  *	
  *							   rpos_				  wpos_(data coverage)
  *								 ^						^
- *	(5)	
+ *	(6)	
  *		|---------------------------------------------------------|(size)
  *	
  *	solution:	record the bytes to be read,incr and desc the count of bytes,when writing data,copy the the nmmber of data
@@ -131,11 +139,12 @@ namespace easy
 					else
 					{
 						buf_lock_.acquire_lock();
-						_Type* new_buffer = _allocate(size_ + cnt - (size_ - wpos_));
+						size_t __new_size = size_ + cnt - (size_ - wpos_);
+						_Type* new_buffer = _allocate(__new_size);
 						memmove(new_buffer,buffer_,wpos_);
 						memmove(new_buffer + wpos_, src, cnt);
 						_deallocate(buffer_,size_);
-						size_ = size_ + cnt - (size_ - wpos_);
+						size_ = __new_size;
 						wpos_ += cnt;
 						buffer_ = new_buffer;
 #ifdef _DEBUG
@@ -164,7 +173,8 @@ namespace easy
 		
 		void reallocate(size_t __extra_buffer_size)
 		{
-			_Type* new_buffer = _allocate(size_ + __extra_buffer_size);
+			size_t __new_size = size_ + __extra_buffer_size;
+			_Type* new_buffer = _allocate(__new_size);
 			//	case 1: rpos_ <= wpos_
 			if (rpos_ <= wpos_)
 			{
@@ -189,7 +199,7 @@ namespace easy
 			}
 			rpos_ = 0;
 			_deallocate(buffer_,size_);
-			size_ = size_ + __extra_buffer_size;
+			size_ = __new_size;
 			buffer_ = new_buffer;
 #ifdef _DEBUG
 			std::cout << "reallocate---buffer size = " << size_ << " rpos_ = " << rpos_ << " wpos_ = " << wpos_ << std::endl;
