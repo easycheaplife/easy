@@ -70,13 +70,10 @@
 #include <string>
 #include <string.h>
 #include <iostream>
-#if 0
+
 #ifndef easy_base_type_h__
 #include "easy_base_type.h"
 #endif //easy_base_type_h__
-#else
-#include "easy_assist.h"
-#endif
 
 namespace easy
 {
@@ -130,49 +127,42 @@ namespace easy
 				}
 				else
 				{
-					if (size_ - wpos_ + rpos_ > cnt)	// >= is ok>
+					if (size_ - wpos_ + rpos_ > cnt)	// do not >= , reserev at lest on byte avoid data coveage!
 					{
-						memmove(buffer_ + wpos_, src, size_ - wpos_);
-						memmove(buffer_, src + size_ - wpos_, cnt - (size_ - wpos_));
-						wpos_ = cnt - (size_ - wpos_);
+						size_t __buf_wpos_tail_left = size_ - wpos_;
+						memmove(buffer_ + wpos_, src, __buf_wpos_tail_left);
+						memmove(buffer_, src + size_ - wpos_, cnt - __buf_wpos_tail_left);
+						wpos_ = cnt - __buf_wpos_tail_left;
 					}
 					else
 					{
-						buf_lock_.acquire_lock();
 						size_t __new_size = size_ + cnt - (size_ - wpos_);
-						_Type* new_buffer = _allocate(__new_size);
-						memmove(new_buffer,buffer_,wpos_);
-						memmove(new_buffer + wpos_, src, cnt);
-						_deallocate(buffer_,size_);
-						size_ = __new_size;
+						reallocate(__new_size);
+						memmove(buffer_ + wpos_,src,cnt);
 						wpos_ += cnt;
-						buffer_ = new_buffer;
-#ifdef _DEBUG
-						std::cout << "append reallocate---buffer size = " << size_ << " rpos_ = " << rpos_ << " wpos_ = " << wpos_ << std::endl;
-#endif	//_DEBUG
-						buf_lock_.release_lock();
 					}
 				}
 			}
 			//	case 2: rpos_ > wpos_ 
 			else if(rpos_ > wpos_)
 			{
-				if (rpos_ - wpos_ >= cnt)	
+				if (rpos_ - wpos_ <= cnt)	// (rpos_ - wpos_ > cnt)  do not >= , reserev at lest on byte avoid data coveage!
 				{
-					memmove(buffer_ + wpos_,src,cnt);
-					wpos_ += cnt;
+					easy_uint32 __new_size = size_ * 2;
+					if ( __new_size <= cnt)
+					{
+						__new_size = size_ * 2 + cnt;
+					}
+					reallocate(__new_size);
 				}
-				else
-				{
-					reallocate(size_);
-					memmove(buffer_ + wpos_,src,cnt);
-					wpos_ += cnt;
-				}
+				memmove(buffer_ + wpos_,src,cnt);
+				wpos_ += cnt;
 			}
 		}
 		
-		void reallocate(size_t __extra_buffer_size)
+		void reallocate(size_t __extra_buffer_size,easy_bool __debug = false)
 		{
+			buf_lock_.acquire_lock();
 			size_t __new_size = size_ + __extra_buffer_size;
 			_Type* new_buffer = _allocate(__new_size);
 			//	case 1: rpos_ <= wpos_
@@ -201,9 +191,11 @@ namespace easy
 			_deallocate(buffer_,size_);
 			size_ = __new_size;
 			buffer_ = new_buffer;
-#ifdef _DEBUG
-			std::cout << "reallocate---buffer size = " << size_ << " rpos_ = " << rpos_ << " wpos_ = " << wpos_ << std::endl;
-#endif	//_DEBUG
+			if(__debug)
+			{
+				std::cout << "reallocate---buffer size = " << size_ << " rpos_ = " << rpos_ << " wpos_ = " << wpos_ << std::endl;
+			}
+			buf_lock_.release_lock();
 		}
 
 		EasyRingbuffer& operator << (easy_bool val)
@@ -340,64 +332,6 @@ namespace easy
 			return true;
 		}
 
-		easy_bool pre_read_4_bug_20002(easy_uint8* des,size_t len)
-		{
-			if(bytes_ < len)
-			{
-				return false;
-			}
-			if(0 == len)
-			{
-				return false;
-			}
-			if (read_finish_4_bug_20002())
-			{
-				return false;
-			}
-			if (rpos_ < wpos_)
-			{
-				if (wpos_ - rpos_ >= len)
-				{
-					//	fix bug #20001:
-					if((rpos_ + len) > size_)
-					{
-						return false;
-					}
-					memmove(des,buffer_ + rpos_,len);
-				}
-				else
-				{
-					return false;
-				}
-
-			}
-			else if (rpos_ >= wpos_)
-			{
-				if (0 == bytes_)
-				{
-					return false;
-				}
-				if (size_ - rpos_ >= len)
-				{
-					memmove(des,buffer_ + rpos_,len);
-				}
-				else
-				{
-					//	is enough
-					if(size_ - rpos_ + wpos_ >= len)
-					{
-						memmove(des,buffer_ + rpos_, size_ - rpos_);
-						memmove(des + size_ - rpos_, buffer_, len - (size_ - rpos_));
-					}
-					else
-					{
-						return false;
-					}
-				}
-			}
-			return true;
-		}
-
 		easy_bool pre_read(std::string& des,size_t len)
 		{
 			if (read_finish())
@@ -454,75 +388,6 @@ namespace easy
 			return true;
 		}
 
-		easy_bool pre_read_4_bug_20002(std::string& des,size_t len)
-		{
-			if(bytes_ < len)
-			{
-				return false;
-			}
-			if(0 == len)
-			{
-				return false;
-			}
-			if (read_finish_4_bug_20002())
-			{
-				return false;
-			}
-			if (rpos_ < wpos_)
-			{
-				if (wpos_ - rpos_ >= len)
-				{
-					//	fix bug #20001:
-					if((rpos_ + len) > size_)
-					{
-						return false;
-					}
-#if 0
-					memmove(des,buffer_ + rpos_,len);
-#endif
-					des.insert(0,(const char*)buffer_ + rpos_,len);
-				}
-				else
-				{
-					return false;
-				}
-
-			}
-			else if (rpos_ >= wpos_)
-			{
-				if (0 == bytes_)
-				{
-					return false;
-				}
-				if (size_ - rpos_ >= len)
-				{
-#if 0
-					memmove(des,buffer_ + rpos_,len);
-#endif
-					des.insert(0,(const char*)buffer_ + rpos_,len);
-				}
-				else
-				{
-					//	is enough
-					if(size_ - rpos_ + wpos_ >= len)
-					{
-#if 0
-						memmove(des,buffer_ + rpos_, size_ - rpos_);
-						memmove(des + size_ - rpos_, buffer_, len - (size_ - rpos_));
-#endif
-						des.insert(0,(const char*)buffer_ + rpos_,size_ - rpos_);
-						des.insert(size_ - rpos_,(const char*)buffer_,len - (size_ - rpos_));
-					}
-					else
-					{
-						return false;
-					}
-				}
-			}
-
-			return true;
-		}
-
 		easy_bool read(easy_uint8* des,size_t len)
 		{
 			if (read_finish())
@@ -574,73 +439,6 @@ namespace easy
 					}
 				}
 			}
-			return true;
-		}
-
-		easy_bool read_4_bug_20002(easy_uint8* des,size_t len)
-		{
-			if(bytes_ < len)
-			{
-				return false;
-			}
-			if(0 == len)
-			{
-				return false;
-			}
-			if (read_finish_4_bug_20002())
-			{
-				return false;
-			}
-			if (rpos_ < wpos_)
-			{
-				/*	
-				fix bug #20001:
-					for two thread,include read/write thread, the value of wpos_ maybe changed, you should consider this case:
-					(rpos_ < wpos_) is true, (wpos_ - rpos_ >= len) is false, if wpos_ 's value is not changed, it ok,just return false;
-					(rpos_ < wpos_) is true, (wpos_ - rpos_ >= len) is true because of wpos_ 's value is changed, it dangerous! when memmove called,(rpos_ + len) is more than size_, overflow will happend.
-				*/
-				if (wpos_ - rpos_ >= len)
-				{
-					if((rpos_ + len) > size_)
-					{
-						return false;
-					}
-					memmove(des,buffer_ + rpos_,len);
-					rpos_ += len;
-				}
-				else
-				{
-					return false;
-				}
-				
-			}
-			else if (rpos_ >= wpos_)
-			{
-				if (0 == bytes_)
-				{
-					return false;
-				}
-				if (size_ - rpos_ >= len)
-				{
-					memmove(des,buffer_ + rpos_,len);
-					rpos_ += len;
-				}
-				else
-				{
-					//	is enough
-					if(size_ - rpos_ + wpos_ >= len)
-					{
-						memmove(des,buffer_ + rpos_, size_ - rpos_);
-						memmove(des + size_ - rpos_, buffer_, len - (size_ - rpos_));
-						rpos_ = len - (size_ - rpos_);
-					}
-					else
-					{
-						return false;
-					}
-				}
-			}
-			decrease_bytes(len);
 			return true;
 		}
 
@@ -700,78 +498,6 @@ namespace easy
 					}
 				}
 			}
-			return true;
-		}
-
-		easy_bool read_4_bug_20002(std::string& des,size_t len)
-		{
-			if(bytes_ < len)
-			{
-				return false;
-			}
-			if(0 == len)
-			{
-				return false;
-			}
-			if (read_finish_4_bug_20002())
-			{
-				return false;
-			}
-			if (rpos_ < wpos_)
-			{
-				if (wpos_ - rpos_ >= len)
-				{
-					//	fix bug #20001:
-					if((rpos_ + len) > size_)
-					{
-						return false;
-					}
-#if 0
-					memmove(des,buffer_ + rpos_,len);
-#endif
-					des.insert(0,(const char*)buffer_ + rpos_,len);
-					rpos_ += len;
-				}
-				else
-				{
-					return false;
-				}
-
-			}
-			else if (rpos_ >= wpos_)
-			{
-				if (0 == bytes_)
-				{
-					return false;
-				}
-				if (size_ - rpos_ >= len)
-				{
-#if 0
-					memmove(des,buffer_ + rpos_,len);
-#endif
-					des.insert(0,(const char*)buffer_ + rpos_,len);
-					rpos_ += len;
-				}
-				else
-				{
-					//	is enough
-					if(size_ - rpos_ + wpos_ >= len)
-					{
-#if 0
-						memmove(des,buffer_ + rpos_, size_ - rpos_);
-						memmove(des + size_ - rpos_, buffer_, len - (size_ - rpos_));
-#endif
-						des.insert(0,(const char*)buffer_ + rpos_,size_ - rpos_);
-						des.insert(size_ - rpos_,(const char*)buffer_,len - (size_ - rpos_));
-						rpos_ = len - (size_ - rpos_);
-					}
-					else
-					{
-						return false;
-					}
-				}
-			}
-			decrease_bytes(len);
 			return true;
 		}
 
@@ -849,9 +575,10 @@ namespace easy
 
 		size_t bytes() const { return bytes_;}
 
-		easy_bool read_finish_4_bug_20002() { return wpos_ == rpos_ && 0 == bytes_; }
-
-		easy_bool read_finish() { return wpos_ == rpos_; }
+		easy_bool read_finish() 
+		{ 
+			return wpos_ == rpos_; 
+		}
 
 		easy_bool write_full() { return wpos_ == rpos_ && bytes_ >= size_; }
 		
