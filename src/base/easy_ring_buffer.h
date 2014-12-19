@@ -286,7 +286,7 @@ namespace easy
 			return r;
 		}
 
-		easy_bool pre_read(easy_uint8* des,size_t len)
+		easy_bool peek(easy_uint8* des,size_t len)
 		{
 			if (read_finish())
 			{
@@ -332,7 +332,7 @@ namespace easy
 			return true;
 		}
 
-		easy_bool pre_read(std::string& des,size_t len)
+		easy_bool peek(std::string& des,size_t len)
 		{
 			if (read_finish())
 			{
