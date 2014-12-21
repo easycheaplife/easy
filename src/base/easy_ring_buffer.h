@@ -85,10 +85,11 @@ namespace easy
 		typedef _Lock lock;
 
 		explicit  EasyRingbuffer(size_t size):
-		size_(size),
+            bytes_(0),
+            size_(size),
 			wpos_(0),
-			rpos_(0),
-			bytes_(0)
+			rpos_(0)
+			
 		{
 			buffer_ = _allocate(size_);
 		}

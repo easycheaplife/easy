@@ -16,7 +16,7 @@
 #endif //__WINDOWS
 #endif //WIN32
 
-#if defined __LINUX && !defined __NO_THREAD
+#if (defined __LINUX || defined __MACX) && !defined __NO_THREAD
 #include <pthread.h>
 #include <unistd.h>
 #include <string.h>
@@ -159,11 +159,19 @@ namespace easy
 		int release_lock() {  return 0; }
 		void uninitialize() { }
 #elif defined __EASY_PTHREAD
+#if defined __LINUX
 		pthread_spinlock_t spinlock_;
 		void initialize()   {  pthread_spin_init(&spinlock_, 0); }
 		int acquire_lock() {  return pthread_spin_lock(&spinlock_); }
 		int release_lock() {  return pthread_spin_unlock(&spinlock_); }
 		void uninitialize() { pthread_spin_destroy(&spinlock_); }
+#elif defined __MACX
+        void initialize()   {  }
+        int acquire_lock() {  return 0; }
+        int tryacquire_lock() {  return 0; }
+        int release_lock() {  return 0; }
+        void uninitialize() { }
+#endif //__LINUX
 #elif defined __EASY_NO_THREAD
 		void initialize()   {  }
 		int acquire_lock() {  return 0; }
