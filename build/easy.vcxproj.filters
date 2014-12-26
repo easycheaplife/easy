@@ -19,6 +19,9 @@
     <ClCompile Include="..\src\test\easy_test_allocator.cc">
       <Filter>test</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\test\pthread\easy_unit_test_pthread.cc">
+      <Filter>test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\base\easy_util.h" />
