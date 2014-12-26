@@ -2,6 +2,7 @@
 #include "easy_ring_buffer.h"
 #include "easy_threading.h"
 #include "easy_allocator.h"
+#include "easy_lock.h"
 #include <iostream>
 #include <time.h>
 //
@@ -57,7 +58,7 @@ static std::string __random_string[] =
 
 static int __random_string_size = 22;
 
-easy::EasyRingbuffer<easy_uint8,easy::alloc> buf(10240);
+easy::EasyRingbuffer<easy_uint8,easy::alloc,easy::mutex_lock> buf(10240);
 void TestRingBuffer::test()
 {
 	std::cout << "------start test ring buffer-----" << std::endl;
@@ -131,7 +132,7 @@ void TestRingBuffer::reallocate_test()
 	static const int __buffer_size = 256;
 
 	//	case 1: rpos_ <= wpos_
-	easy::EasyRingbuffer<easy_uint8,easy::alloc> __buf(1024);
+	easy::EasyRingbuffer<easy_uint8,easy::alloc,easy::mutex_lock> __buf(1024);
 	__buf << __str_name;
 	__buf << __str_name2;
 
@@ -145,7 +146,7 @@ void TestRingBuffer::reallocate_test()
 
 	//	case 2: rpos_ > wpos_ 
 	srand( (unsigned)time(NULL)); 
-	easy::EasyRingbuffer<easy_uint8,easy::alloc> __buf2(256);
+	easy::EasyRingbuffer<easy_uint8,easy::alloc,easy::mutex_lock> __buf2(256);
 	static int __max_count = 100;
 	size_t __head_size = 0;
 	char __read_buffe[__buffer_size] = {};
