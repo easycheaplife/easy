@@ -29,7 +29,6 @@
     <ClCompile Include="..\src\test\easy_test_allocator.cc" />
     <ClCompile Include="..\src\test\easy_test_bits_for_x32_x64.cc" />
     <ClCompile Include="..\src\test\easy_test_ring_buffer.cc" />
-    <ClCompile Include="..\src\test\pthread\easy_unit_test_pthread.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\base\easy_atomic_op.h" />
