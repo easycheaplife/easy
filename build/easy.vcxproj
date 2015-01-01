@@ -28,6 +28,7 @@
     <ClCompile Include="..\src\main\easy_main.cc" />
     <ClCompile Include="..\src\test\easy_test_allocator.cc" />
     <ClCompile Include="..\src\test\easy_test_bits_for_x32_x64.cc" />
+    <ClCompile Include="..\src\test\easy_test_log.cc" />
     <ClCompile Include="..\src\test\easy_test_ring_buffer.cc" />
   </ItemGroup>
   <ItemGroup>
