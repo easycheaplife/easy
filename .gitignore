@@ -24,7 +24,7 @@
 *.sdf
 *.opensdf
 *.pdb
-bin
+#bin
 Debug/
 core.*
 src/test/cppunit/easy_main

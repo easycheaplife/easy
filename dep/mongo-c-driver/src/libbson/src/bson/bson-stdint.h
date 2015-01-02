@@ -2,7 +2,7 @@
 #define _SRC_BSON_BSON_STDINT_H 1
 #ifndef _GENERATED_STDINT_H
 #define _GENERATED_STDINT_H " "
-/* generated using a gnu compiler version gcc (GCC) 4.9.1 20140813 (Red Hat 4.9.1-7) Copyright (C) 2014 Free Software Foundation, Inc. This is free software; see the source for copying conditions. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. */
+/* generated using a gnu compiler version gcc (GCC) 4.8.2 20140120 (Red Hat 4.8.2-16) Copyright (C) 2013 Free Software Foundation, Inc. This is free software; see the source for copying conditions. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. */
 
 #include <stdint.h>
 

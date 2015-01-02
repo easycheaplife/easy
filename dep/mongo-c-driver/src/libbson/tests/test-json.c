@@ -139,15 +139,9 @@ test_bson_as_json_utf8 (void)
    char *str;
 
    b = bson_new();
-#ifndef WIN32
-      assert(bson_append_utf8(b, "€€€€€", -1, "€€€€€", -1));
-#endif //WIN32
-
+   assert(bson_append_utf8(b, "€€€€€", -1, "€€€€€", -1));
    str = bson_as_json(b, &len);
-#ifndef WIN32
    assert(!strcmp(str, "{ \"€€€€€\" : \"€€€€€\" }"));
-#endif //WIN32
-   
    bson_free(str);
    bson_destroy(b);
 }
