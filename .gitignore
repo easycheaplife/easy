@@ -166,7 +166,7 @@ dep/mongo-c-driver/examples/bulk/.deps/
 dep/mongo-c-driver/examples/bulk/.dirstamp
 dep/mongo-c-driver/filter-bsondump
 dep/mongo-c-driver/find-and-modify
-dep/mongo-c-driver/libtool
+#dep/mongo-c-driver/libtool
 dep/mongo-c-driver/mongoc-dump
 dep/mongo-c-driver/mongoc-ping
 dep/mongo-c-driver/mongoc-rpc-validate
