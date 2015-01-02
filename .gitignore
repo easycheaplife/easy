@@ -154,7 +154,7 @@ dep/mongo-c-driver/bulk1
 dep/mongo-c-driver/bulk2
 dep/mongo-c-driver/bulk3
 dep/mongo-c-driver/config.status
-dep/mongo-c-driver/doc/
+#dep/mongo-c-driver/doc/
 dep/mongo-c-driver/example-client
 dep/mongo-c-driver/example-gridfs
 dep/mongo-c-driver/example-matcher
