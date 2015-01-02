@@ -40,6 +40,7 @@
 #if defined(_WIN32)
 /* For _getpid() */
 #include <process.h>
+#include <windows.h>
 #endif
 
 #include "jansson.h"

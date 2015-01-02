@@ -28,6 +28,7 @@
     <ClCompile Include="..\src\main\easy_main.cc" />
     <ClCompile Include="..\src\test\easy_test_allocator.cc" />
     <ClCompile Include="..\src\test\easy_test_bits_for_x32_x64.cc" />
+    <ClCompile Include="..\src\test\easy_test_log.cc" />
     <ClCompile Include="..\src\test\easy_test_ring_buffer.cc" />
   </ItemGroup>
   <ItemGroup>
@@ -137,14 +138,14 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;__WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\src\base;$(SolutionDir)..\src\database;$(SolutionDir)..\src\test;$(SolutionDir)..\src\test\cppunit;$(SolutionDir)..\src\test\effective_c;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\src\base;$(SolutionDir)..\src\database;$(SolutionDir)..\src\test;$(SolutionDir)..\src\test\cppunit;$(SolutionDir)..\src\test\effective_c;$(SolutionDir)..\dep\pthreads\pthreads.2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerOutput>All</AssemblerOutput>
       <EnablePREfast>true</EnablePREfast>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\lib;$(SolutionDir)..\dep\mysql\lib\debug;$(SolutionDir)..\dep\ace\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\dep\mysql\lib\debug;$(SolutionDir)..\dep\pthreads\Pre-built.2\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateMapFile>false</GenerateMapFile>
       <HeapReserveSize>
