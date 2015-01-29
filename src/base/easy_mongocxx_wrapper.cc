@@ -8,10 +8,10 @@ namespace easy
 {
 	MongocxxWrapper* MongocxxWrapper::inst_ = NULL;
 
-	MongocxxWrapper* MongocxxWrapper::instance()
+	MongocxxWrapper* MongocxxWrapper::instance(const char* __uri_string /*= "192.168.22.66:27017"*/)
 	{
 		if(!inst_){
-			inst_ = new MongocxxWrapper();
+			inst_ = new MongocxxWrapper(__uri_string);
 		}
 		return inst_;
 	}

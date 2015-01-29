@@ -33,11 +33,11 @@ namespace easy
 	{
 	public:
 
-		MongocxxWrapper(const char* __uri_string = "192.168.22.66:27017");
+		MongocxxWrapper(const char* __uri_string);
 
 		~MongocxxWrapper();
 
-		static MongocxxWrapper* instance ();
+		static MongocxxWrapper* instance (const char* __uri_string = "192.168.22.66:27017");
 
 		static void destrory();
 
