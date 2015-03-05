@@ -111,7 +111,7 @@ namespace easy
 #endif // _DEBUG
 		}
 
-		void append(const easy_uint8* src, size_t cnt)
+		void append(const easy_uint8* src, size_t cnt,easy_bool __debug = false)
 		{
 			if (!cnt)
 			{
@@ -125,6 +125,10 @@ namespace easy
 				{
 					memmove(buffer_ + wpos_,src,cnt);
 					wpos_ += cnt;
+					if(__debug)
+					{
+						printf("#1\n");
+					}
 				}
 				else
 				{
@@ -134,13 +138,21 @@ namespace easy
 						memmove(buffer_ + wpos_, src, __buf_wpos_tail_left);
 						memmove(buffer_, src + size_ - wpos_, cnt - __buf_wpos_tail_left);
 						wpos_ = cnt - __buf_wpos_tail_left;
+						if(__debug)
+						{
+							printf("#2\n");
+						}
 					}
 					else
 					{
 						size_t __new_size = size_ + cnt - (size_ - wpos_);
-						reallocate(__new_size);
+						reallocate(__new_size,true);
 						memmove(buffer_ + wpos_,src,cnt);
 						wpos_ += cnt;
+						if(__debug)
+						{
+							printf("#3\n");
+						}
 					}
 				}
 			}
@@ -154,10 +166,18 @@ namespace easy
 					{
 						__new_size = size_ * 2 + cnt;
 					}
-					reallocate(__new_size);
+					reallocate(__new_size,true);
+					if(__debug)
+					{
+						printf("#4\n");
+					}
 				}
 				memmove(buffer_ + wpos_,src,cnt);
 				wpos_ += cnt;
+				if(__debug)
+				{
+					printf("#5\n");
+				}
 			}
 		}
 		
