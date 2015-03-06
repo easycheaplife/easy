@@ -29,6 +29,7 @@ THE SOFTWARE.
 #include <time.h>
 #elif defined __LINUX
 #include <unistd.h>
+#include <stdlib.h>
 #endif //__WINDOWS
 
 #ifndef easy_base_type_h__

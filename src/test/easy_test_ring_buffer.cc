@@ -154,13 +154,13 @@ void TestRingBuffer::reallocate_test()
 	srand( (unsigned)time(NULL)); 
 	easy::EasyRingbuffer<easy_uint8,easy::alloc,easy::mutex_lock> __buf2(256);
 	static int __max_count = 100;
-	size_t __head_size = 0;
+	easy_uint32 __head_size = 0;
 	char __read_buffe[__buffer_size] = {};
 	std::string __string_read_buffer;
 	for (int __i = 0; __i < __max_count; ++__i)
 	{
 		int __random_index = rand()%__random_string_size;
-		__buf2 << __random_string[__random_index].size();
+		__buf2 << (easy_uint32)__random_string[__random_index].size();
 		__buf2 << __random_string[__random_index];
 		int __read_flag = rand()%__max_count;
 		if(__read_flag % 2)

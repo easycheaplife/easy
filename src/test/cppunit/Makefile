@@ -21,7 +21,8 @@ CPPFLAGS = $(CFLAGS)
 #****************************************************************************
 OBJS = easy_main.o
 SRCS = easy_main.cc \
-../easy_test_lock.cc \
+../easy_test_ring_buffer.cc \
+#../easy_test_lock.cc \
 #../easy_test_allocator.cc \
 ../easy_test_threading.cc \
 ../stl/stl_map_test.cc \
@@ -35,7 +36,6 @@ SRCS = easy_main.cc \
 ../easy_test_list.cc\
 ../easy_test_locked_queue.cc\
 ../easy_test_byte_buffer.cc \
-../easy_test_ring_buffer.cc \
 ../easy_test_stdandard_allocator.cc \
 ../easy_test_bits_for_x32_x64.cc \
 
