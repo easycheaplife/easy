@@ -213,6 +213,11 @@ easy_int32 ReadThread::_Run( void* p )
 	std::string 	 __string_packet;
 	while (true)
 	{
+		if(__rw_buf.is_lock())
+		{
+			easy::Util::sleep(1000);
+			continue;
+		}
 		easy_uint32 __packet_length = 0;
 		if(!__rw_buf.peek((unsigned char*)&__packet_length,__head_size))
 		{
@@ -235,7 +240,7 @@ easy_int32 ReadThread::_Run( void* p )
 		{
 			printf("read:%s\n",__string_packet.c_str() + __head_size);
 		}
-		easy_int32 __random_time = easy::Util::random(1000);
+		easy_int32 __random_time = easy::Util::random(1);
 		easy::Util::sleep(__random_time);
 	}
 	return 0;
@@ -267,6 +272,11 @@ easy_int32 WriteThread::_Run( void* p )
 	easy_int32 __fd = 999;
 	while (true)
 	{
+		if(__rw_buf.is_lock())
+		{
+			easy::Util::sleep(1000);
+			continue;
+		}
 		static int __random_string_size = 22;
 		int __random_index = rand()%__random_string_size;
 		std::string __context = __random_string[__random_index];
@@ -279,7 +289,7 @@ easy_int32 WriteThread::_Run( void* p )
 		memcpy(__data + __head_size,__context.c_str(),__context.length());
 		__rw_buf.append((easy_uint8*)__data,__context.length() + __head_size,true);
 		printf("write:%s\n",__context.c_str());
-		easy_int32 __random_time = easy::Util::random(1000);
+		easy_int32 __random_time = easy::Util::random(1);
 		easy::Util::sleep(__random_time);
 	}
 	return 0;
@@ -289,12 +299,16 @@ easy_int32 WriteThread::_Run( void* p )
 void TestRingBuffer::read_write_test()
 {
 	char* uninitialized_buff = new char[256];
-	uninitialized_buff[0] = 'c';
+	uninitialized_buff[0] = 'l';
+	uninitialized_buff[1] = 'e';
+	uninitialized_buff[2] = 'd';
+	char* __c1 = uninitialized_buff + 1;
+	char* __c2 = uninitialized_buff + 2;
 	ReadThread* __read_thread = new ReadThread();
 	WriteThread* __write_thread = new WriteThread();
 	while (true)
 	{
-		easy_int32 __random_time = easy::Util::random(1000)*1000;
+		easy_int32 __random_time = easy::Util::random(1000)*1;
 		easy::Util::sleep(__random_time);
 	}
 }

@@ -23,7 +23,10 @@
 #define easy_ring_buffer_h__
 /************************************************************************/
 /*  
- *  a ring buffer to work with network buffer cache 
+ *  a ring buffer to work with network buffer cache ,usually it use at read/write thread model, that is to say, one thread write data to buffer, 
+ *  another thread read data from buffer. when write data to the end of buffer, write from head of buffer again.
+ *  
+ *  
  *  bugs:
  *  #20001	2014-11-19 
  *  when reading from buffer,wpos_ changed at another thread,but is as a factor for read,that will cause a overflow. 
@@ -64,13 +67,16 @@
  *	solution:	record the bytes to be read,incr and desc the count of bytes,when writing data,copy the the nmmber of data
  *	which less than size_ - bytes_,it can avoid data coverage,that happened at the write is quickly fast than read.
  *	reference http://www.asawicki.info/news_1468_circular_buffer_of_raw_binary_data_in_c.html
+ *	#20007	2015-3-10
+ *	when append function called and the buffer is not enough, reallocate will be called, it maybe some problem at multi thread: 
+ *	a thread calls reallocate but not execute finished, but b thread get the time slice, the data maybe not completely or is old buffer. 
  *
  */
 /************************************************************************/
 #include <string>
 #include <string.h>
 #include <iostream>
-
+#include "easy_lock.h"
 #ifndef easy_base_type_h__
 #include "easy_base_type.h"
 #endif //easy_base_type_h__
@@ -88,7 +94,8 @@ namespace easy
             bytes_(0),
             size_(size),
 			wpos_(0),
-			rpos_(0)
+			rpos_(0),
+			lock_flag_(0)
 			
 		{
 			buffer_ = _allocate(size_);
@@ -99,6 +106,7 @@ namespace easy
 			wpos_ = 0;
 			rpos_ = 0;
 			bytes_ = 0;
+			lock_flag_.decr();
 		}
 
 		~EasyRingbuffer() { _deallocate(buffer_,size_); }
@@ -183,6 +191,7 @@ namespace easy
 		
 		void reallocate(size_t __extra_buffer_size,easy_bool __debug = false)
 		{
+			lock_flag_.incr();
 			buf_lock_.acquire_lock();
 			size_t __new_size = size_ + __extra_buffer_size;
 			_Type* new_buffer = _allocate(__new_size);
@@ -217,6 +226,7 @@ namespace easy
 				std::cout << "reallocate---buffer size = " << size_ << " rpos_ = " << rpos_ << " wpos_ = " << wpos_ << std::endl;
 			}
 			buf_lock_.release_lock();
+			lock_flag_.decr();
 		}
 
 		EasyRingbuffer& operator << (easy_bool val)
@@ -639,6 +649,8 @@ namespace easy
 			bytes_lock_.release_lock();
 		}
 
+		easy_bool	is_lock() const { return lock_flag_.ref_count_; }
+
 	private:
 		_Type* _allocate(size_t size) 
 		{ 
@@ -671,9 +683,14 @@ namespace easy
 
 		allocator_type	alloc_type_;
 
-		lock bytes_lock_;
+		//				maybe useless lock_flag_ is used
+		lock			bytes_lock_;
 
-		lock buf_lock_;
+		lock			buf_lock_;
+
+		//	fix bug #20007, set the flag is true when the buffer is reallocate at one thread, when thread switchs, the other thread check the flag,
+		//	if the flag is true, do nothing until the flag is reset. it looks like a spin lock.
+		easy::_Refcount_Base		lock_flag_;
 	};
 }
 
