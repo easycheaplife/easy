@@ -532,6 +532,22 @@ namespace easy
 			return true;
 		}
 
+		void pack(easy_uint8* __des,easy_uint32& __length)
+		{
+			if (wpos_ > rpos_)
+			{
+				memmove(__des,buffer_ + rpos_,wpos_ - rpos_);
+				__length = wpos_ - rpos_;
+			}
+			else if (wpos_ < rpos_)
+			{
+				memmove(__des,buffer_ + rpos_,size_ - rpos_);
+				memmove(__des + size_ - rpos_,buffer_,wpos_);
+				__length = size_ - rpos_ + wpos_;
+			}
+			rpos_ = wpos_;
+		}
+
 		EasyRingbuffer& operator >> (easy_bool& val)
 		{
 			val = read<easy_bool>();

@@ -185,7 +185,7 @@ void TestRingBuffer::reallocate_test()
 }
 
 easy::EasyRingbuffer<easy_uint8,easy::alloc,easy::mutex_lock> __rw_buf(8*1024);
-
+easy::EasyRingbuffer<easy_uint8,easy::alloc,easy::mutex_lock> __rw_buf2(8*1024);
 class ReadThread : public easy::EasyThread
 {
 public:
@@ -247,6 +247,102 @@ easy_int32 ReadThread::_Run( void* p )
 }
 
 
+class ReadThread2 : public easy::EasyThread
+{
+public:
+	ReadThread2() {}
+
+	~ReadThread2() {}
+
+	easy_int32 _Run( void* p );
+
+};
+
+easy_int32 ReadThread2::_Run( void* p )
+{
+	while (true)
+	{
+		if(__rw_buf.wpos() > __rw_buf.rpos())	
+		{
+			easy_int32 __read_left = __rw_buf.wpos() - __rw_buf.rpos();
+			__rw_buf2.append(__rw_buf.buffer() + __rw_buf.rpos(),__read_left);
+			__rw_buf.set_rpos(__rw_buf.rpos() + __read_left);
+		}
+		else if(__rw_buf.wpos() < __rw_buf.rpos())
+		{
+			easy_int32 __ring_buf_tail_left = __rw_buf.size() - __rw_buf.rpos();
+			__rw_buf2.append(__rw_buf.buffer() + __rw_buf.rpos(),__ring_buf_tail_left);
+			__rw_buf.set_rpos(__rw_buf.size());
+			easy_int32 __wpos = __rw_buf.wpos();
+			__rw_buf2.append(__rw_buf.buffer(),__wpos);
+			__rw_buf.set_rpos(__wpos);
+		}
+		easy_int32 __random_time = easy::Util::random(1);
+		easy::Util::sleep(__random_time);
+	}
+	return 0;
+}
+
+class ReadThread3 : public easy::EasyThread
+{
+public:
+	ReadThread3();
+
+	~ReadThread3();
+
+	easy_int32 _Run( void* p );
+
+private:
+
+};
+
+ReadThread3::ReadThread3()
+{
+}
+
+ReadThread3::~ReadThread3()
+{
+}
+
+easy_int32 ReadThread3::_Run( void* p )
+{
+	static const easy_int32 __head_size = sizeof(easy_uint32);
+	std::string 	 __string_packet;
+	while (true)
+	{
+		if(__rw_buf2.is_lock())
+		{
+			easy::Util::sleep(1000);
+			continue;
+		}
+		easy_uint32 __packet_length = 0;
+		if(!__rw_buf2.peek((unsigned char*)&__packet_length,__head_size))
+		{
+			continue;
+		}
+		easy_uint16 __real_packet_length = __packet_length & 0x0000ffff;
+		easy_uint16 __real_fd = __packet_length >> 16;
+		if(!__real_packet_length)
+		{
+			printf("__packet_length error\n");
+			continue;
+		}
+		if (__real_packet_length > 256)
+		{
+			printf("__packet_length error\n");
+			continue;
+		}
+		__string_packet.clear();
+		if(__rw_buf2.read(__string_packet,__real_packet_length + __head_size))
+		{
+			printf("read:%s\n",__string_packet.c_str() + __head_size);
+		}
+		easy_int32 __random_time = easy::Util::random(1);
+		easy::Util::sleep(__random_time);
+	}
+	return 0;
+}
+
 class WriteThread : public easy::EasyThread
 {
 public:
@@ -304,8 +400,15 @@ void TestRingBuffer::read_write_test()
 	uninitialized_buff[2] = 'd';
 	char* __c1 = uninitialized_buff + 1;
 	char* __c2 = uninitialized_buff + 2;
+#if 0
 	ReadThread* __read_thread = new ReadThread();
 	WriteThread* __write_thread = new WriteThread();
+#else
+	ReadThread2* __read_thread2 = new ReadThread2();
+	ReadThread3* __read_thread3 = new ReadThread3();
+	WriteThread* __write_thread = new WriteThread();
+#endif
+
 	while (true)
 	{
 		easy_int32 __random_time = easy::Util::random(1000)*1;
