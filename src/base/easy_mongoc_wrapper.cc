@@ -1,5 +1,5 @@
 #include"easy_mongoc_wrapper.h"
-
+#ifdef __USE_MONGOC
 namespace easy
 {
 	MongocWrapper* MongocWrapper::inst_ = NULL;
@@ -88,3 +88,4 @@ namespace easy
 	}
 }
 
+#endif //__USE_MONGOC

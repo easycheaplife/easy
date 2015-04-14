@@ -21,7 +21,7 @@
  ****************************************************************************/
 
 //	provide simple mongoc interface for use
-
+#ifdef __USE_MONGOC
 #ifndef easy_mongoc_wrapper_h__
 #define easy_mongoc_wrapper_h__
 #include <mongoc.h>
@@ -59,3 +59,4 @@ namespace easy
 	};
 }
 #endif // easy_mongoc_wrapper_h__
+#endif //__USE_MONGOC
