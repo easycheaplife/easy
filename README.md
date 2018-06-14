@@ -6,11 +6,11 @@ easy
 	
 compiler:
 ---
-#####linux
+##### linux
 	$git clone git@github.com:yuyunliuhen/tinynet.git
 	$cd easy 
 	$cd build & make
-#####windows
+##### windows
 	use the visual studio solution at the directory build.
 file list
 ---
@@ -19,7 +19,7 @@ file list
 unit test:
 ---
 	just add file to makefile or visual studio solution.
-#####linux
+##### linux
 ![](http://img.my.csdn.net/uploads/201411/20/1416454253_3229.jpg)
-#####windows
+##### windows
 ![](http://img.my.csdn.net/uploads/201411/20/1416454253_8780.jpg)
