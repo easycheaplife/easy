@@ -6,8 +6,8 @@
 	file base:	easy_macro
 	file ext:	h
 	author:		Lee
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 #ifndef easy_macro_h__
 #define easy_macro_h__

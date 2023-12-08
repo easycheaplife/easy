@@ -6,36 +6,45 @@
 	file base:	easy_stdandard_allocator
 	file ext:	h
 	author:		Lee
-	
-	purpose:	standard new/delete 
+
+	purpose:	standard new/delete
 *********************************************************************/
 #ifndef easy_stdandard_allocator_h__
 #define easy_stdandard_allocator_h__
 #include <new>
 
-namespace easy
-{
-	class easy_stdand_allocator
-	{
-	public:
-		//	normal new/delete
-		static void* operator new(std::size_t size) throw( std::bad_alloc ){ return ::operator new (size); }
+namespace easy {
+class easy_stdand_allocator {
+  public:
+    //	normal new/delete
+    static void* operator new(std::size_t size) throw( std::bad_alloc ) {
+        return ::operator new (size);
+    }
 
-		static void operator delete(void* ptr) throw() { ::operator delete(ptr); }
+    static void operator delete(void* ptr) throw() {
+        ::operator delete(ptr);
+    }
 
-		// placement new/delete
-		static void* operator new (std::size_t size, void* ptr) throw() { return ::operator new (size,ptr); }
-		static void operator delete(void* memory,void* ptr) throw() { return ::operator delete(memory,ptr); }
+    // placement new/delete
+    static void* operator new (std::size_t size, void* ptr) throw() {
+        return ::operator new (size,ptr);
+    }
+    static void operator delete(void* memory,void* ptr) throw() {
+        return ::operator delete(memory,ptr);
+    }
 
-		//	nothrow new/delete
-		static void* operator new(std::size_t size, const std::nothrow_t& nt) throw() { return ::operator new(size,nt); }
-		static void operator delete (void* memory,const std::nothrow_t&) throw() { ::operator delete(memory); }
-	};
+    //	nothrow new/delete
+    static void* operator new(std::size_t size, const std::nothrow_t& nt) throw() {
+        return ::operator new(size,nt);
+    }
+    static void operator delete (void* memory,const std::nothrow_t&) throw() {
+        ::operator delete(memory);
+    }
+};
 
-	struct easy_default_user_allocator_new_delete
-	{
+struct easy_default_user_allocator_new_delete {
 
-	};
+};
 
 }
 #endif // easy_stdandard_allocator_h__

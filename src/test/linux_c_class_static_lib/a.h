@@ -1,7 +1,6 @@
-class A
-{
-	public:
-	A();
-	~A();
-	void Output();
+class A {
+  public:
+    A();
+    ~A();
+    void Output();
 };

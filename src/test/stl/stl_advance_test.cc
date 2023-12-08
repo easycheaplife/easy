@@ -10,17 +10,16 @@ using namespace std ;
 typedef list<string> STRLIST;
 
 
-class stl_advance_test : public CPPUNIT_NS::TestCase
-{
-	CPPUNIT_TEST_SUITE(stl_advance_test);
+class stl_advance_test : public CPPUNIT_NS::TestCase {
+    CPPUNIT_TEST_SUITE(stl_advance_test);
 #if 0
-	CPPUNIT_IGNORE;
+    CPPUNIT_IGNORE;
 #endif
-	CPPUNIT_TEST(test);
-	CPPUNIT_TEST_SUITE_END();
+    CPPUNIT_TEST(test);
+    CPPUNIT_TEST_SUITE_END();
 
-protected:
-	void test();
+  protected:
+    void test();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(stl_advance_test);
@@ -29,9 +28,8 @@ CPPUNIT_TEST_SUITE_REGISTRATION(stl_advance_test);
 // tests implementation
 //
 
-void stl_advance_test::test()
-{
-	STRLIST List;
+void stl_advance_test::test() {
+    STRLIST List;
     STRLIST::iterator iList;
     STRLIST::difference_type dTheDiff;
 
@@ -55,5 +53,5 @@ void stl_advance_test::test()
     advance(iList,2);
     cout << "The element is " << *iList << endl;
     dTheDiff = distance( List.begin(), iList);
-	if(dTheDiff){}	//warning: variable ‘dTheDiff’ set but not used [-Wunused-but-set-variable]
+    if(dTheDiff) {}	//warning: variable ‘dTheDiff’ set but not used [-Wunused-but-set-variable]
 }

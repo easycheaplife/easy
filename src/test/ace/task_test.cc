@@ -3,28 +3,24 @@
 //
 // TestCase class
 //
-class Test_task : public CPPUNIT_NS::TestCase
-{
-	CPPUNIT_TEST_SUITE(Test_task);
+class Test_task : public CPPUNIT_NS::TestCase {
+    CPPUNIT_TEST_SUITE(Test_task);
 #if 0
-	CPPUNIT_IGNORE;
+    CPPUNIT_IGNORE;
 #endif
-	CPPUNIT_TEST(test);
-	CPPUNIT_TEST_SUITE_END();
+    CPPUNIT_TEST(test);
+    CPPUNIT_TEST_SUITE_END();
 
-protected:
-	void test();
+  protected:
+    void test();
 };
 
-class my_task : public ACE_Task_Base
-{
-	virtual int svc (void)
-	{
-		while(1)
-		{
-			::Sleep(1);
-		}
-	}
+class my_task : public ACE_Task_Base {
+    virtual int svc (void) {
+        while(1) {
+            ::Sleep(1);
+        }
+    }
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(Test_task);
@@ -33,9 +29,8 @@ CPPUNIT_TEST_SUITE_REGISTRATION(Test_task);
 // tests implementation
 //
 
-void Test_task::test()
-{
-	my_task __task;
-	__task.activate();
-	__task.wait();
+void Test_task::test() {
+    my_task __task;
+    __task.activate();
+    __task.wait();
 }

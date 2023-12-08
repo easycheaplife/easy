@@ -6,7 +6,7 @@
 	file base:	easy_memory
 	file ext:	h
 	author:		Lee
-	
+
 	purpose:	memory alloca and release
 *********************************************************************/
 #include "easy_allocator.h"

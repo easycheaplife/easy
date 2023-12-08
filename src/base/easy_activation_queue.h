@@ -6,8 +6,8 @@
 	file base:	easy_activation_queue
 	file ext:	h
 	author:		Lee
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 #ifndef easy_activation_queue_h__
 #define easy_activation_queue_h__
@@ -16,12 +16,10 @@
 #include "easy_copy_disabled.h"
 #endif //easy_copy_disabled_h__
 
-namespace easy
-{
-	class EasyActivationQueue
-	{
+namespace easy {
+class EasyActivationQueue {
 
-	};
+};
 }
 
 #endif // easy_activation_queue_h__

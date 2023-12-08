@@ -6,8 +6,8 @@
 	file base:	easy_mysql_connection
 	file ext:	h
 	author:		Lee
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 #ifndef easy_mysql_connection_h__
 #define easy_mysql_connection_h__
@@ -38,104 +38,103 @@
 #include "easy_prepared_statement.h"
 #endif //easy_prepared_statement_h__
 
-namespace easy
-{
-	class EasyPreparedStatement;
-	class EasyMySQLPreparedStatement;
+namespace easy {
+class EasyPreparedStatement;
+class EasyMySQLPreparedStatement;
 
-	enum ConnectionFlags
-	{
-		CONNECTION_ASYNC = 0x1,
-		CONNECTION_SYNCH = 0x2,
-	};
+enum ConnectionFlags {
+    CONNECTION_ASYNC = 0x1,
+    CONNECTION_SYNCH = 0x2,
+};
 
-	struct EasyMySQLConnectionInfo
-	{
-		EasyMySQLConnectionInfo() {}
-		EasyMySQLConnectionInfo(const std::string& info_string)
-		{
-			Tokens tokens(info_string, ';');
+struct EasyMySQLConnectionInfo {
+    EasyMySQLConnectionInfo() {}
+    EasyMySQLConnectionInfo(const std::string& info_string) {
+        Tokens tokens(info_string, ';');
 
-			if (tokens.size() != 5)
-				return;
+        if (tokens.size() != 5)
+            return;
 
-			easy_uint8 i = 0;
+        easy_uint8 i = 0;
 
-			host_.assign(tokens[i++]);
-			port_or_socket_.assign(tokens[i++]);
-			user_.assign(tokens[i++]);
-			password_.assign(tokens[i++]);
-			database_.assign(tokens[i++]);
-		}
+        host_.assign(tokens[i++]);
+        port_or_socket_.assign(tokens[i++]);
+        user_.assign(tokens[i++]);
+        password_.assign(tokens[i++]);
+        database_.assign(tokens[i++]);
+    }
 
-		std::string user_;
-		std::string password_;
-		std::string database_;
-		std::string host_;
-		std::string port_or_socket_;
-	};
+    std::string user_;
+    std::string password_;
+    std::string database_;
+    std::string host_;
+    std::string port_or_socket_;
+};
 
-	typedef std::map<easy_uint32 /*index*/, std::pair<const char* /*query*/, ConnectionFlags /*sync/async*/> > PreparedStatementMap;
+typedef std::map<easy_uint32 /*index*/, std::pair<const char* /*query*/, ConnectionFlags /*sync/async*/> > PreparedStatementMap;
 
-	#define PREPARE_STATEMENT(a, b, c) queries_[a] = std::make_pair(strdup(b), c);
-	class EasyMySQLConnection
-	{
-		template <class T> friend class EasyDatabaseWorkerPool;
-		friend class EasyPingOperation;
-	public:
-		EasyMySQLConnection(EasyMySQLConnectionInfo& conn_info);                              //! Constructor for synchronous connections.
+#define PREPARE_STATEMENT(a, b, c) queries_[a] = std::make_pair(strdup(b), c);
+class EasyMySQLConnection {
+    template <class T> friend class EasyDatabaseWorkerPool;
+    friend class EasyPingOperation;
+  public:
+    EasyMySQLConnection(EasyMySQLConnectionInfo& conn_info);                              //! Constructor for synchronous connections.
 
-		virtual ~EasyMySQLConnection();
+    virtual ~EasyMySQLConnection();
 
-		virtual easy_bool Open();
+    virtual easy_bool Open();
 
-		void Close();
+    void Close();
 
-		easy_bool Execute(const char* sql);
+    easy_bool Execute(const char* sql);
 
-		easy_bool Execute(EasyPreparedStatement* stmt);
+    easy_bool Execute(EasyPreparedStatement* stmt);
 
-		EasyResultSet* Query(const char* sql);
+    EasyResultSet* Query(const char* sql);
 
-		EasyPreparedResultSet* Query(EasyPreparedStatement* stmt);
+    EasyPreparedResultSet* Query(EasyPreparedStatement* stmt);
 
-		void SetCharacterSet(std::string& character_set) { mysql_set_character_set(mysql_, character_set.c_str());}
+    void SetCharacterSet(std::string& character_set) {
+        mysql_set_character_set(mysql_, character_set.c_str());
+    }
 
-		void Ping() { }
+    void Ping() { }
 
-		void Unlock() { }
-	
-		protected:
-		easy_bool LockIfReady(){ }
+    void Unlock() { }
 
-		MYSQL* GetHandle()  { return mysql_; }
+  protected:
+    easy_bool LockIfReady() { }
 
-		EasyMySQLPreparedStatement* GetPreparedStatement(easy_uint32 index);
+    MYSQL* GetHandle()  {
+        return mysql_;
+    }
 
-		void PrepareStatement(easy_uint32 index, const char* sql, ConnectionFlags flags);
+    EasyMySQLPreparedStatement* GetPreparedStatement(easy_uint32 index);
 
-		easy_bool PrepareStatements();
+    void PrepareStatement(easy_uint32 index, const char* sql, ConnectionFlags flags);
 
-		virtual void DoPrepareStatements() = 0;
+    easy_bool PrepareStatements();
 
-		std::vector<EasyMySQLPreparedStatement*>	mysql_stmts_;			//! PreparedStatements storage
-		PreparedStatementMap						queries_;				//! Query storage
-		easy_bool									reconnecting_;			//! Are we reconnecting?
-		easy_bool									prepare_error_;			//! Was there any error while preparing statements?
+    virtual void DoPrepareStatements() = 0;
 
-	private:
-		easy_bool _Query(const char *sql, MYSQL_RES **pResult, MYSQL_FIELD **pFields,\
-			easy_uint64* pRowCount, easy_uint32* pFieldCount);
+    std::vector<EasyMySQLPreparedStatement*>	mysql_stmts_;			//! PreparedStatements storage
+    PreparedStatementMap						queries_;				//! Query storage
+    easy_bool									reconnecting_;			//! Are we reconnecting?
+    easy_bool									prepare_error_;			//! Was there any error while preparing statements?
 
-		easy_bool _Query(EasyPreparedStatement* stmt, MYSQL_RES **pResult, easy_uint64* pRowCount, easy_uint32* pFieldCount);
+  private:
+    easy_bool _Query(const char *sql, MYSQL_RES **pResult, MYSQL_FIELD **pFields,\
+                     easy_uint64* pRowCount, easy_uint32* pFieldCount);
 
-		easy_bool _HandleMySQLErrno(easy_uint32 err_no);
-	private:
-		MYSQL *						mysql_;						//! MySQL Handle.
+    easy_bool _Query(EasyPreparedStatement* stmt, MYSQL_RES **pResult, easy_uint64* pRowCount, easy_uint32* pFieldCount);
 
-		EasyMySQLConnectionInfo&	connection_info_;			//! Connection info (used for logging)
+    easy_bool _HandleMySQLErrno(easy_uint32 err_no);
+  private:
+    MYSQL *						mysql_;						//! MySQL Handle.
 
-		ConnectionFlags				connection_flags;			//! Connection flags (for preparing relevant statements)
-	};
+    EasyMySQLConnectionInfo&	connection_info_;			//! Connection info (used for logging)
+
+    ConnectionFlags				connection_flags;			//! Connection flags (for preparing relevant statements)
+};
 }
 #endif // easy_mysql_connection_h__

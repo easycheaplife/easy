@@ -6,8 +6,8 @@
 	file base:	easy_cppunit_mini
 	file ext:	h
 	author:		Lee
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 #ifndef easy_cppunit_mini_h__
 #define easy_cppunit_mini_h__
@@ -21,115 +21,111 @@
 #include <string.h>
 
 #if 0
-namespace CPPUNIT_NS
-{
+namespace CPPUNIT_NS {
 #endif
-	class Reporter {
-	public:
-		virtual ~Reporter() {}
-		virtual void error(const char * /*macroName*/, const char * /*in_macro*/, const char * /*in_file*/, int /*in_line*/) {}
-		virtual void message( const char * /*msg*/ ) {}
-		virtual void progress( const char * /*in_className*/, const char * /*in_testName*/, bool /*ignored*/, bool /* explicit */) {}
-		virtual void end() {}
-		virtual void printSummary() {}
-	};
+class Reporter {
+  public:
+    virtual ~Reporter() {}
+    virtual void error(const char * /*macroName*/, const char * /*in_macro*/, const char * /*in_file*/, int /*in_line*/) {}
+    virtual void message( const char * /*msg*/ ) {}
+    virtual void progress( const char * /*in_className*/, const char * /*in_testName*/, bool /*ignored*/, bool /* explicit */) {}
+    virtual void end() {}
+    virtual void printSummary() {}
+};
 
-	class TestFixture 
-	{
-	public:
-		virtual ~TestFixture() {}
+class TestFixture {
+  public:
+    virtual ~TestFixture() {}
 
-		//! \brief Set up context before running a test.
-		virtual void setUp() {}
+    //! \brief Set up context before running a test.
+    virtual void setUp() {}
 
-		//! Clean up after the test run.
-		virtual void tearDown() {}
-	};
+    //! Clean up after the test run.
+    virtual void tearDown() {}
+};
 
-	class TestCase : public TestFixture 
-	{
-	public:
-		TestCase() { registerTestCase(this); }
+class TestCase : public TestFixture {
+  public:
+    TestCase() {
+        registerTestCase(this);
+    }
 
-		void setUp() { m_failed = false; }
-		static int run(Reporter *in_reporter = 0, const char *in_testName = "", bool invert = false);
-		int numErrors() { return m_numErrors; }
-		static void registerTestCase(TestCase *in_testCase);
+    void setUp() {
+        m_failed = false;
+    }
+    static int run(Reporter *in_reporter = 0, const char *in_testName = "", bool invert = false);
+    int numErrors() {
+        return m_numErrors;
+    }
+    static void registerTestCase(TestCase *in_testCase);
 
-		virtual void myRun(const char * /*in_name*/, bool /*invert*/ = false) {}
+    virtual void myRun(const char * /*in_name*/, bool /*invert*/ = false) {}
 
-		virtual void error(const char *in_macroName, const char *in_macro, const char *in_file, int in_line) 
-		{
-			m_failed = true;
-			if (m_reporter) {
-				m_reporter->error(in_macroName, in_macro, in_file, in_line);
-			}
-		}
+    virtual void error(const char *in_macroName, const char *in_macro, const char *in_file, int in_line) {
+        m_failed = true;
+        if (m_reporter) {
+            m_reporter->error(in_macroName, in_macro, in_file, in_line);
+        }
+    }
 
-		static void message(const char *msg) 
-		{
-			if (m_reporter) {
-				m_reporter->message(msg);
-			}
-		}
+    static void message(const char *msg) {
+        if (m_reporter) {
+            m_reporter->message(msg);
+        }
+    }
 
-		bool equalDoubles(double in_expected, double in_real, double in_maxErr) 
-		{
-			double diff = in_expected - in_real;
-			if (diff < 0.) {
-				diff = -diff;
-			}
-			return diff < in_maxErr;
-		}
+    bool equalDoubles(double in_expected, double in_real, double in_maxErr) {
+        double diff = in_expected - in_real;
+        if (diff < 0.) {
+            diff = -diff;
+        }
+        return diff < in_maxErr;
+    }
 
-		virtual void progress(const char *in_className, const char *in_functionName, bool ignored, bool explicitTest) 
-		{
-			++m_numTests;
-			if (m_reporter) {
-				m_reporter->progress(in_className, in_functionName, ignored, explicitTest);
-			}
-		}
+    virtual void progress(const char *in_className, const char *in_functionName, bool ignored, bool explicitTest) {
+        ++m_numTests;
+        if (m_reporter) {
+            m_reporter->progress(in_className, in_functionName, ignored, explicitTest);
+        }
+    }
 
-		bool shouldRunThis(const char *in_desiredTest, const char *in_className, const char *in_functionName,
-			bool invert, bool explicit_test, bool &do_progress) 
-		{
-				if ((in_desiredTest) && (in_desiredTest[0] != '\0')) 
-				{
-					do_progress = false;
-					const char *ptr = strstr(in_desiredTest, "::");
-					if (ptr) {
-						bool match = (strncmp(in_desiredTest, in_className, strlen(in_className)) == 0) &&
-							(strncmp(ptr + 2, in_functionName, strlen(in_functionName)) == 0);
-						// Invert shall not make explicit test run:
-						return invert ? (match ? !match : !explicit_test)
-							: match;
-					}
-					bool match = (strcmp(in_desiredTest, in_className) == 0);
-					do_progress = match;
-					return !explicit_test && (match == !invert);
-				}
-				do_progress = true;
-				return !explicit_test;
-		}
+    bool shouldRunThis(const char *in_desiredTest, const char *in_className, const char *in_functionName,
+                       bool invert, bool explicit_test, bool &do_progress) {
+        if ((in_desiredTest) && (in_desiredTest[0] != '\0')) {
+            do_progress = false;
+            const char *ptr = strstr(in_desiredTest, "::");
+            if (ptr) {
+                bool match = (strncmp(in_desiredTest, in_className, strlen(in_className)) == 0) &&
+                             (strncmp(ptr + 2, in_functionName, strlen(in_functionName)) == 0);
+                // Invert shall not make explicit test run:
+                return invert ? (match ? !match : !explicit_test)
+                       : match;
+            }
+            bool match = (strcmp(in_desiredTest, in_className) == 0);
+            do_progress = match;
+            return !explicit_test && (match == !invert);
+        }
+        do_progress = true;
+        return !explicit_test;
+    }
 
-		void tearDown() 
-		{
-			if (m_failed)
-				++m_numErrors;
-			m_reporter->end();
-		}
+    void tearDown() {
+        if (m_failed)
+            ++m_numErrors;
+        m_reporter->end();
+    }
 
-	protected:
-		static int m_numErrors;
-		static int m_numTests;
+  protected:
+    static int m_numErrors;
+    static int m_numTests;
 
-	private:
-		static TestCase *m_root;
-		TestCase *m_next;
-		bool m_failed;
+  private:
+    static TestCase *m_root;
+    TestCase *m_next;
+    bool m_failed;
 
-		static Reporter *m_reporter;
-	};
+    static Reporter *m_reporter;
+};
 #if 0
 }
 #endif

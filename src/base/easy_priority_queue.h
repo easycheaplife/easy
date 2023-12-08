@@ -6,8 +6,8 @@
 	file base:	easy_priority_queue
 	file ext:	h
 	author:		Lee
-	
-	purpose:	a priority queue 
+
+	purpose:	a priority queue
 *********************************************************************/
 #ifndef easy_priority_queue_h__
 #define easy_priority_queue_h__
@@ -16,26 +16,28 @@
 #include "easy_base_type.h"
 #endif // easy_base_type_h__
 
-namespace easy
-{
-	class EasyPriorityQueue
-	{
-	public:
-		EasyPriorityQueue() { }
+namespace easy {
+class EasyPriorityQueue {
+  public:
+    EasyPriorityQueue() { }
 
-		EasyPriorityQueue(easy_ulong32 priority) :priority_(priority) { }
+    EasyPriorityQueue(easy_ulong32 priority) :priority_(priority) { }
 
-		virtual ~EasyPriorityQueue() { }
+    virtual ~EasyPriorityQueue() { }
 
-		easy_ulong32 priority() { return priority_; }
+    easy_ulong32 priority() {
+        return priority_;
+    }
 
-		void set_priority( easy_ulong32 priority ) { priority_ = priority; }
+    void set_priority( easy_ulong32 priority ) {
+        priority_ = priority;
+    }
 
-		virtual easy_int32 call (void) = 0;
+    virtual easy_int32 call (void) = 0;
 
-	protected:
-		//	The priority of the request.
-		easy_ulong32 priority_;
-	};
+  protected:
+    //	The priority of the request.
+    easy_ulong32 priority_;
+};
 }
 #endif // easy_priority_queue_h__

@@ -36,39 +36,35 @@ THE SOFTWARE.
 #include "easy_base_type.h"
 #endif //easy_base_type_h__
 
-namespace easy
-{
-	struct Tokens: public std::vector<easy_char*>
-	{
-		Tokens(const std::string &src, const easy_char sep, easy_uint32 vector_reserve = 0);
-		~Tokens() { delete[] m_str; }
+namespace easy {
+struct Tokens: public std::vector<easy_char*> {
+    Tokens(const std::string &src, const easy_char sep, easy_uint32 vector_reserve = 0);
+    ~Tokens() {
+        delete[] m_str;
+    }
 
-		easy_char* m_str;
-	};
+    easy_char* m_str;
+};
 
-	class Util
-	{
-	public:
-		static void sleep(easy_uint32 __microseconds)
-		{
+class Util {
+  public:
+    static void sleep(easy_uint32 __microseconds) {
 #ifdef __WINDOWS
-			//	unit is mill second
-			::Sleep(__microseconds/1000);
+        //	unit is mill second
+        ::Sleep(__microseconds/1000);
 #elif defined __LINUX
-			usleep(__microseconds);
+        usleep(__microseconds);
 #endif //__WINDOWS
-		}
+    }
 
-		static void seed()
-		{
-			srand((unsigned)time(NULL)); 
-		}
+    static void seed() {
+        srand((unsigned)time(NULL));
+    }
 
-		static easy_int64 random(easy_int64 __max)
-		{
-			return rand()%__max;
-		}
-	};
+    static easy_int64 random(easy_int64 __max) {
+        return rand()%__max;
+    }
+};
 
 }
 #endif // easy_util_h__

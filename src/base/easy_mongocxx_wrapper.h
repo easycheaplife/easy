@@ -27,27 +27,27 @@
 #endif //WIN32
 #include "mongo/client/dbclient.h"
 
-namespace easy
-{
-	class MongocxxWrapper 
-	{
-	public:
+namespace easy {
+class MongocxxWrapper {
+  public:
 
-		MongocxxWrapper(const char* __uri_string);
+    MongocxxWrapper(const char* __uri_string);
 
-		~MongocxxWrapper();
+    ~MongocxxWrapper();
 
-		static MongocxxWrapper* instance (const char* __uri_string = "192.168.22.66:27017");
+    static MongocxxWrapper* instance (const char* __uri_string = "192.168.22.66:27017");
 
-		static void destrory();
+    static void destrory();
 
-		mongo::DBClientConnection& db_client_connection() { return conn_; }
+    mongo::DBClientConnection& db_client_connection() {
+        return conn_;
+    }
 
-	private:
-		mongo::DBClientConnection conn_;
+  private:
+    mongo::DBClientConnection conn_;
 
-		static MongocxxWrapper*	inst_;
-	};
+    static MongocxxWrapper*	inst_;
+};
 }
 
 #endif // easy_mongocxx_wrapper_h__

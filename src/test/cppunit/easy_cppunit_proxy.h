@@ -6,13 +6,13 @@
 	file base:	easy_cppunit_proxy
 	file ext:	h
 	author:		Lee
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 #ifndef easy_cppunit_proxy_h__
 #define easy_cppunit_proxy_h__
 
-#if !defined (CPPUNIT_MINI_USE_EXCEPTIONS) 
+#if !defined (CPPUNIT_MINI_USE_EXCEPTIONS)
 #  define CPPUNIT_MINI_USE_EXCEPTIONS
 #endif
 

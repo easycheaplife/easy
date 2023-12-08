@@ -4,17 +4,16 @@
 //
 // TestCase class
 //
-class TestBugCheck : public CPPUNIT_NS::TestCase
-{
-	CPPUNIT_TEST_SUITE(TestBugCheck);
+class TestBugCheck : public CPPUNIT_NS::TestCase {
+    CPPUNIT_TEST_SUITE(TestBugCheck);
 #if 0
-	CPPUNIT_IGNORE;
+    CPPUNIT_IGNORE;
 #endif
-	CPPUNIT_TEST(test);
-	CPPUNIT_TEST_SUITE_END();
+    CPPUNIT_TEST(test);
+    CPPUNIT_TEST_SUITE_END();
 
-protected:
-	void test();
+  protected:
+    void test();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestBugCheck);
@@ -32,46 +31,35 @@ CPPUNIT_TEST_SUITE_REGISTRATION(TestBugCheck);
 	throw;					\
 };
 
-void GameTest()
-{
-	KYLIN_TRY
+void GameTest() {
+    KYLIN_TRY
 #if 0
-	assert(NULL);
+    assert(NULL);
 #else
-	char* p = NULL;
-	*p = 'a';
+    char* p = NULL;
+    *p = 'a';
 #endif
-	KYLIN_CATCH("GameTest1");
+    KYLIN_CATCH("GameTest1");
 }
 
-void Game()
-{
-	try
-	{
-		GameTest();
-	}
-	catch (const std::exception& e)
-	{
-		ExceptionPushPop(e.what());
-		throw;
-	}
-	catch (...)
-	{
-		throw;
-	}
+void Game() {
+    try {
+        GameTest();
+    } catch (const std::exception& e) {
+        ExceptionPushPop(e.what());
+        throw;
+    } catch (...) {
+        throw;
+    }
 }
 
-void TestBugCheck::test()
-{
-	char	tReprotStr[]="adfasefbasdrobadbasdasdfgasdf";
-	__try
-	{
-		Game();
-	}
-	__except( ExceptionParse( GetExceptionInformation(), true, tReprotStr, 0 ),	
-		TerminateProcess( GetCurrentProcess(), 0 ),
-		EXCEPTION_EXECUTE_HANDLER )
-	{
+void TestBugCheck::test() {
+    char	tReprotStr[]="adfasefbasdrobadbasdasdfgasdf";
+    __try {
+        Game();
+    } __except( ExceptionParse( GetExceptionInformation(), true, tReprotStr, 0 ),
+                TerminateProcess( GetCurrentProcess(), 0 ),
+                EXCEPTION_EXECUTE_HANDLER ) {
 
-	}
+    }
 }

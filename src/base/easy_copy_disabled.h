@@ -6,23 +6,21 @@
 	file base:	easy_copy_disabled
 	file ext:	h
 	author:		Lee
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 #ifndef easy_copy_disabled_h__
 #define easy_copy_disabled_h__
 
-namespace easy
-{
-	class EasyCopyDisabled
-	{
-	public:
-		//	default constructor
-		EasyCopyDisabled (void) { }
-	private:
-		EasyCopyDisabled ( const EasyCopyDisabled& );
-		EasyCopyDisabled& operator = ( const EasyCopyDisabled& );
-	};
+namespace easy {
+class EasyCopyDisabled {
+  public:
+    //	default constructor
+    EasyCopyDisabled (void) { }
+  private:
+    EasyCopyDisabled ( const EasyCopyDisabled& );
+    EasyCopyDisabled& operator = ( const EasyCopyDisabled& );
+};
 }
 
 #endif // easy_copy_disabled_h__

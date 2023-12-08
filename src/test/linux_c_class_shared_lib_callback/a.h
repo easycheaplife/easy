@@ -1,8 +1,7 @@
 #include "i.h"
-class A : public I
-{
-	public:
-	A();
-	~A();
-	void Output();
+class A : public I {
+  public:
+    A();
+    ~A();
+    void Output();
 };

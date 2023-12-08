@@ -6,8 +6,8 @@
 	file base:	easy_ref_count_big_int
 	file ext:	h
 	author:		Lee
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 #ifndef easy_ref_count_big_int_h__
 #define easy_ref_count_big_int_h__
@@ -20,26 +20,23 @@
 #include "easy_ref_count_ptr.h"
 #endif //easy_ref_count_ptr_h__
 
-namespace easy
-{
-	class EasyRefCountBigInt
-	{
-		friend EasyRefCountBigInt operator + (const EasyRefCountBigInt&, const EasyRefCountBigInt&);
-	public:
-		EasyRefCountBigInt(const easy_int8* p) : value_( new EasyBigInt(p)){ }
+namespace easy {
+class EasyRefCountBigInt {
+    friend EasyRefCountBigInt operator + (const EasyRefCountBigInt&, const EasyRefCountBigInt&);
+  public:
+    EasyRefCountBigInt(const easy_int8* p) : value_( new EasyBigInt(p)) { }
 
-		EasyRefCountBigInt(easy_uint32 u = 0) : value_ ( new EasyBigInt(u) ) { }
+    EasyRefCountBigInt(easy_uint32 u = 0) : value_ ( new EasyBigInt(u) ) { }
 
-		EasyRefCountBigInt(const EasyBigInt& bi) : value_( new EasyBigInt(bi) ) { }
+    EasyRefCountBigInt(const EasyBigInt& bi) : value_( new EasyBigInt(bi) ) { }
 
-	private:
-		EasyRefCountPtr<EasyBigInt> value_;
-	};
+  private:
+    EasyRefCountPtr<EasyBigInt> value_;
+};
 
-	EasyRefCountBigInt operator+( const EasyRefCountBigInt& left, const EasyRefCountBigInt& right)
-	{
-		return EasyRefCountBigInt(*(left.value_) + *(right.value_));
-	}
+EasyRefCountBigInt operator+( const EasyRefCountBigInt& left, const EasyRefCountBigInt& right) {
+    return EasyRefCountBigInt(*(left.value_) + *(right.value_));
+}
 }
 #endif // easy_ref_count_big_int_h__
 

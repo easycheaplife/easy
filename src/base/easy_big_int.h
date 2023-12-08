@@ -6,8 +6,8 @@
 	file base:	easy_big_int
 	file ext:	h
 	author:		Lee
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 #ifndef easy_big_int_h__
 #define easy_big_int_h__
@@ -23,37 +23,39 @@
 #endif //easy_ref_count_object_h__
 
 
-namespace easy
-{
-	class EasyBigInt : public EasyRefCountObject
-	{
-		friend EasyBigInt operator + (const EasyBigInt&, const EasyBigInt&);
-	public:
-		EasyBigInt(const easy_int8*);
+namespace easy {
+class EasyBigInt : public EasyRefCountObject {
+    friend EasyBigInt operator + (const EasyBigInt&, const EasyBigInt&);
+  public:
+    EasyBigInt(const easy_int8*);
 
-		EasyBigInt(easy_uint32 = 0);
+    EasyBigInt(easy_uint32 = 0);
 
-		EasyBigInt(const EasyBigInt& copy_from);
+    EasyBigInt(const EasyBigInt& copy_from);
 
-		EasyBigInt& operator = (const EasyBigInt&);
+    EasyBigInt& operator = (const EasyBigInt&);
 
-		EasyBigInt& operator += (const EasyBigInt&);
+    EasyBigInt& operator += (const EasyBigInt&);
 
-		~EasyBigInt();
+    ~EasyBigInt();
 
-		easy_int8* digits() const { return digits_; }
+    easy_int8* digits() const {
+        return digits_;
+    }
 
-		easy_uint32 ndigits() const { return ndigits_; }
-	private:
-		easy_int8*	digits_;
+    easy_uint32 ndigits() const {
+        return ndigits_;
+    }
+  private:
+    easy_int8*	digits_;
 
-		easy_uint32 ndigits_;
+    easy_uint32 ndigits_;
 
-		easy_uint32 size_;
+    easy_uint32 size_;
 
-		EasyBigInt(const EasyBigInt&,const EasyBigInt&);
+    EasyBigInt(const EasyBigInt&,const EasyBigInt&);
 
-		easy_int8 _Fetch(easy_uint32 pos) const ;
-	};
+    easy_int8 _Fetch(easy_uint32 pos) const ;
+};
 }
 #endif // easy_big_int_h__

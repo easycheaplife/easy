@@ -25,17 +25,18 @@
 #include <string>
 #define __default_collection  "test.test"
 
-namespace easy
-{
-	class MongocxxUnit{
-	public:
-		MongocxxUnit(std::string&	__collection) { collection_ = __collection; }
+namespace easy {
+class MongocxxUnit {
+  public:
+    MongocxxUnit(std::string&	__collection) {
+        collection_ = __collection;
+    }
 
-		virtual ~MongocxxUnit() {}
+    virtual ~MongocxxUnit() {}
 
-	protected:
-		std::string		collection_;
-	};
+  protected:
+    std::string		collection_;
+};
 }
 
 #endif // easy_mongocxx_unit_h__

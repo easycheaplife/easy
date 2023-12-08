@@ -6,7 +6,7 @@
 	file base:	easy_mutex
 	file ext:	h
 	author:		Lee
-	
+
 	purpose:	extremely light-wight wrapper classes for os thread synchronization.
 				configuration:	for now, we just choose between pthread or win32 mutex or none.
 *********************************************************************/
@@ -31,69 +31,84 @@
 #define EASY_MUTEXT_HELPER	EASY_MUTEXT_HELPER_NONE
 #endif
 
-namespace easy
-{
+namespace easy {
 #ifdef __WINDOWS
-	class EasyWin32Mutex : public EasyCopyDisabled
-	{
-	public:
-		EasyWin32Mutex() { ::InitializeCriticalSection(&mtx_); }
+class EasyWin32Mutex : public EasyCopyDisabled {
+  public:
+    EasyWin32Mutex() {
+        ::InitializeCriticalSection(&mtx_);
+    }
 
-		~EasyWin32Mutex() { ::DeleteCriticalSection(&mtx_); }
+    ~EasyWin32Mutex() {
+        ::DeleteCriticalSection(&mtx_);
+    }
 
-		void lock() { ::EnterCriticalSection(&mtx_); }
+    void lock() {
+        ::EnterCriticalSection(&mtx_);
+    }
 
-		void unlock() { ::LeaveCriticalSection(&mtx_); }
-	private:
-		::CRITICAL_SECTION	mtx_;
-	};
+    void unlock() {
+        ::LeaveCriticalSection(&mtx_);
+    }
+  private:
+    ::CRITICAL_SECTION	mtx_;
+};
 #endif
 
 #ifdef __LINUX
-	class EasyPthreadMutex : public EasyCopyDisabled
-	{
-	public:
-		EasyPthreadMutex() { ::pthread_mutex_init(&mtx_,0); }
+class EasyPthreadMutex : public EasyCopyDisabled {
+  public:
+    EasyPthreadMutex() {
+        ::pthread_mutex_init(&mtx_,0);
+    }
 
-		~EasyPthreadMutex() { ::pthread_mutex_destroy(&mtx_); }
+    ~EasyPthreadMutex() {
+        ::pthread_mutex_destroy(&mtx_);
+    }
 
-		void lock() { ::pthread_mutex_lock(&mtx_); }
+    void lock() {
+        ::pthread_mutex_lock(&mtx_);
+    }
 
-		void unlock() { ::pthread_mutex_unlock(&mtx_); }
-	private:
-		::pthread_mutex_t	mtx_;
-	};
+    void unlock() {
+        ::pthread_mutex_unlock(&mtx_);
+    }
+  private:
+    ::pthread_mutex_t	mtx_;
+};
 #endif
 
-	class EasyNullMutex : public EasyCopyDisabled
-	{
-	public:
-		EasyNullMutex() {  }
+class EasyNullMutex : public EasyCopyDisabled {
+  public:
+    EasyNullMutex() {  }
 
-		~EasyNullMutex() {  }
+    ~EasyNullMutex() {  }
 
-		void lock() {  }
+    void lock() {  }
 
-		void unlock() {  }
-	};
+    void unlock() {  }
+};
 
 #if EASY_MUTEXT_HELPER == EASY_MUTEXT_HELPER_WIN32
-	typedef EasyWin32Mutex EasyMutex;
+typedef EasyWin32Mutex EasyMutex;
 #elif EASY_MUTEXT_HELPER == EASY_MUTEXT_HELPER_PTHREAD
-	typedef EasyPthreadMutex EasyMutex;
+typedef EasyPthreadMutex EasyMutex;
 #elif EASY_MUTEXT_HELPER == EASY_MUTEXT_HELPER_NONE
-	 typedef EasyNullMutex EasyMutex;
+typedef EasyNullMutex EasyMutex;
 #endif
 
-	template<typename _Mutex>
-	class EasyGuard : public EasyCopyDisabled
-	{
-	public:
-		explicit EasyGuard(_Mutex& mtx) : mtx_(mtx) { mtx_.lock(); }
+template<typename _Mutex>
+class EasyGuard : public EasyCopyDisabled {
+  public:
+    explicit EasyGuard(_Mutex& mtx) : mtx_(mtx) {
+        mtx_.lock();
+    }
 
-		~EasyGuard() { mtx_.unlock(); }
-	private:
-		_Mutex& mtx_;
-	};
+    ~EasyGuard() {
+        mtx_.unlock();
+    }
+  private:
+    _Mutex& mtx_;
+};
 }
 #endif // easy_mutex_h__

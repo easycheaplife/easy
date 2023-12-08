@@ -28,35 +28,34 @@
 #include <map>
 #include <string>
 
-namespace easy
-{
-	class MongocWrapper{
-	public:
+namespace easy {
+class MongocWrapper {
+  public:
 
-		MongocWrapper(const char* __db = "test",const char* __uri_string = "mongodb://192.168.22.61/");
+    MongocWrapper(const char* __db = "test",const char* __uri_string = "mongodb://192.168.22.61/");
 
-		~MongocWrapper();
+    ~MongocWrapper();
 
-		mongoc_collection_t*  get_collection(const char* __collection_name);
+    mongoc_collection_t*  get_collection(const char* __collection_name);
 
-		bool collection_insert(const char* __collection_name,bson_t* __doc);
+    bool collection_insert(const char* __collection_name,bson_t* __doc);
 
-		mongoc_cursor_t* collection_find(const char* __collection_name,bson_t* __query);
+    mongoc_cursor_t* collection_find(const char* __collection_name,bson_t* __query);
 
-		static MongocWrapper* instance ();
+    static MongocWrapper* instance ();
 
-		static void destrory();
+    static void destrory();
 
-	private:
-		typedef std::map<std::string,mongoc_collection_t*>	collections;
-		collections				collections_;
+  private:
+    typedef std::map<std::string,mongoc_collection_t*>	collections;
+    collections				collections_;
 
-		std::string				db_;
+    std::string				db_;
 
-		mongoc_client_t*		client_;
+    mongoc_client_t*		client_;
 
-		static MongocWrapper*	inst_;
-	};
+    static MongocWrapper*	inst_;
+};
 }
 #endif // easy_mongoc_wrapper_h__
 #endif //__USE_MONGOC

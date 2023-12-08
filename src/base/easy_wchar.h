@@ -6,14 +6,13 @@
 	file base:	easy_wchar
 	file ext:	h
 	author:		Lee
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 #ifndef easy_wchar_h__
 #define easy_wchar_h__
 
-namespace easy
-{
+namespace easy {
 
 }
 #endif // easy_wchar_h__

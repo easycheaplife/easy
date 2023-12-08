@@ -4,17 +4,16 @@
 //
 // TestCase class
 //
-class TestBoostPool : public CPPUNIT_NS::TestCase
-{
-	CPPUNIT_TEST_SUITE(TestBoostPool);
+class TestBoostPool : public CPPUNIT_NS::TestCase {
+    CPPUNIT_TEST_SUITE(TestBoostPool);
 #if 0
-	CPPUNIT_IGNORE;
+    CPPUNIT_IGNORE;
 #endif
-	CPPUNIT_TEST(test);
-	CPPUNIT_TEST_SUITE_END();
+    CPPUNIT_TEST(test);
+    CPPUNIT_TEST_SUITE_END();
 
-protected:
-	void test();
+  protected:
+    void test();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestBoostPool);
@@ -25,22 +24,19 @@ CPPUNIT_TEST_SUITE_REGISTRATION(TestBoostPool);
 using namespace std;
 using namespace boost;
 
-class Test
-{
-public:
-	Test() { }
-	~Test() { }
+class Test {
+  public:
+    Test() { }
+    ~Test() { }
 };
 
-void TestBoostPool::test()
-{
-	const int block_size = sizeof(int);
-	boost::pool<> alloc(block_size);
-	for (int i = 0; i < block_size; ++i)
-	{
-		int* p = (int*)alloc.malloc();
-		cout << *p << endl;
-		alloc.free(p);
-	}
-	
+void TestBoostPool::test() {
+    const int block_size = sizeof(int);
+    boost::pool<> alloc(block_size);
+    for (int i = 0; i < block_size; ++i) {
+        int* p = (int*)alloc.malloc();
+        cout << *p << endl;
+        alloc.free(p);
+    }
+
 }

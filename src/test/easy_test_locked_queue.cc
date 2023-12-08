@@ -12,17 +12,16 @@
 //
 // TestCase class
 //
-class TestLockQueue : public CPPUNIT_NS::TestCase
-{
-	CPPUNIT_TEST_SUITE(TestLockQueue);
+class TestLockQueue : public CPPUNIT_NS::TestCase {
+    CPPUNIT_TEST_SUITE(TestLockQueue);
 #if 0
-	CPPUNIT_IGNORE;
+    CPPUNIT_IGNORE;
 #endif
-	CPPUNIT_TEST(test);
-	CPPUNIT_TEST_SUITE_END();
+    CPPUNIT_TEST(test);
+    CPPUNIT_TEST_SUITE_END();
 
-protected:
-	void test();
+  protected:
+    void test();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestLockQueue);
@@ -30,49 +29,44 @@ CPPUNIT_TEST_SUITE_REGISTRATION(TestLockQueue);
 //
 // tests implementation
 //
-class Widget //: public easy::my_alloc
-{
-public:
-	explicit Widget(int __val) 
-	{
-		std::cout << "construction function Widget called!" << std::endl;
-	}
-	void init(){}
-	void clear(){}
-	~Widget() 
-	{
-		std::cout << "destruction function Widget called!" << std::endl;
-	}
+class Widget { //: public easy::my_alloc
+  public:
+    explicit Widget(int __val) {
+        std::cout << "construction function Widget called!" << std::endl;
+    }
+    void init() {}
+    void clear() {}
+    ~Widget() {
+        std::cout << "destruction function Widget called!" << std::endl;
+    }
 
-	static const size_t MAX_POOL_SIZE = 1024;
-	typedef  int _Key;
+    static const size_t MAX_POOL_SIZE = 1024;
+    typedef  int _Key;
 };
-void TestLockQueue::test()
-{
-	//	new style
-	easy::lock_queue<Widget,easy::mutex_lock,std::list<Widget*> >	__queue;
-	Widget* __widget = __queue.allocate(1);
-	__queue.deallcate(__widget);
-	size_t __size = __queue.free_size();
-	std::cout << "__size=" << __size << std::endl;
-	__queue.clear();
+void TestLockQueue::test() {
+    //	new style
+    easy::lock_queue<Widget,easy::mutex_lock,std::list<Widget*> >	__queue;
+    Widget* __widget = __queue.allocate(1);
+    __queue.deallcate(__widget);
+    size_t __size = __queue.free_size();
+    std::cout << "__size=" << __size << std::endl;
+    __queue.clear();
 
-	//	explicit specialization
+    //	explicit specialization
 
-	easy::lock_queue<Widget,easy::mutex_lock,std::list<Widget*> >	__queue_es;
-	Widget* __widget_cs = __queue_es.allocate(1);
-	__queue_es.deallcate(__widget_cs);
-	__queue_es.clear();
+    easy::lock_queue<Widget,easy::mutex_lock,std::list<Widget*> >	__queue_es;
+    Widget* __widget_cs = __queue_es.allocate(1);
+    __queue_es.deallcate(__widget_cs);
+    __queue_es.clear();
 
-	easy::lock_container<Widget,easy::mutex_lock,unsigned int,std::map<unsigned int,Widget*> >	__container;
-	Widget* __widget1 = new Widget(1);
-	__container.insert(1,__widget1);
-	Widget* __find = __container.find(1);
-	if(__find) 
-	{ 
-		// do something 
-	}
-	__container.clear();
-	__container.remove(1);
-	delete __widget1;
+    easy::lock_container<Widget,easy::mutex_lock,unsigned int,std::map<unsigned int,Widget*> >	__container;
+    Widget* __widget1 = new Widget(1);
+    __container.insert(1,__widget1);
+    Widget* __find = __container.find(1);
+    if(__find) {
+        // do something
+    }
+    __container.clear();
+    __container.remove(1);
+    delete __widget1;
 }

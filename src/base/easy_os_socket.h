@@ -6,8 +6,8 @@
 	file base:	easy_os_socket
 	file ext:	h
 	author:		Lee
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 #ifndef easy_os_socket_h__
 #define easy_os_socket_h__

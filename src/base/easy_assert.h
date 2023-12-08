@@ -6,7 +6,7 @@
 	file base:	easy_assert
 	file ext:	h
 	author:		Lee
-	
+
 	purpose:	Defines the easy_assert(exp) macro.
 *********************************************************************/
 #ifndef easy_assert_h__
@@ -38,9 +38,8 @@
 #define _EASY_CRT_APPEND(_Value1, _Value2) __EASY_CRT_APPEND(_Value1, _Value2)
 #endif
 
-void  _easy_wassert(const char* message, const char* file, unsigned line)
-{
-	easy::EasyLog::SaveLog(LOG_FILE_ASSERT,easy::kErrors,"assert failed at %s ,file %s ,line %d",message,file,line);
+void  _easy_wassert(const char* message, const char* file, unsigned line) {
+    easy::EasyLog::SaveLog(LOG_FILE_ASSERT,easy::kErrors,"assert failed at %s ,file %s ,line %d",message,file,line);
 }
 
 #ifdef __UNICODE

@@ -22,18 +22,18 @@
 #ifndef easy_mongoc_unit_h__
 #define easy_mongoc_unit_h__
 
-namespace easy{
-	class MongocUnit{
-	public:
-		MongocUnit() {}
+namespace easy {
+class MongocUnit {
+  public:
+    MongocUnit() {}
 
-		virtual ~MongocUnit() {}
+    virtual ~MongocUnit() {}
 
-		virtual void init() = 0;
+    virtual void init() = 0;
 
-		virtual void save() = 0;
+    virtual void save() = 0;
 
-	};
+};
 }
 
 #endif // easy_mongoc_unit_h__

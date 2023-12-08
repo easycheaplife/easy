@@ -6,8 +6,8 @@
 	file base:	easy_sql_operation
 	file ext:	h
 	author:		Lee
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 #ifndef easy_sql_operation_h__
 #define easy_sql_operation_h__
@@ -20,31 +20,29 @@
 #include "easy_mysql_connection.h"
 #endif //easy_mysql_connection_h__
 
-namespace easy
-{
-	class EasyMySQLConnection;
+namespace easy {
+class EasyMySQLConnection;
 
-	class EasySQLOperation : public EasyPriorityQueue
-	{
-	public:
-		EasySQLOperation( )
-			: connection_ ( easy_null )
-		{
+class EasySQLOperation : public EasyPriorityQueue {
+  public:
+    EasySQLOperation( )
+        : connection_ ( easy_null ) {
 
-		}
+    }
 
-		virtual easy_int32 call (void)
-		{
-			Execute();
-			return 0;
-		}
+    virtual easy_int32 call (void) {
+        Execute();
+        return 0;
+    }
 
-		virtual easy_bool Execute() = 0;
+    virtual easy_bool Execute() = 0;
 
-		virtual void SetConnection( EasyMySQLConnection* connect ) { connection_ = connect ; }
-	protected:
-		EasyMySQLConnection*	connection_;	
-	};
+    virtual void SetConnection( EasyMySQLConnection* connect ) {
+        connection_ = connect ;
+    }
+  protected:
+    EasyMySQLConnection*	connection_;
+};
 }
 
 #endif // easy_sql_operation_h__

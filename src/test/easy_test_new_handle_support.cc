@@ -3,17 +3,16 @@
 //
 // TestCase class
 //
-class TestNewHandleSupport : public CPPUNIT_NS::TestCase
-{
-	CPPUNIT_TEST_SUITE(TestNewHandleSupport);
+class TestNewHandleSupport : public CPPUNIT_NS::TestCase {
+    CPPUNIT_TEST_SUITE(TestNewHandleSupport);
 #if 0
-	CPPUNIT_IGNORE;
+    CPPUNIT_IGNORE;
 #endif
-	CPPUNIT_TEST(test);
-	CPPUNIT_TEST_SUITE_END();
+    CPPUNIT_TEST(test);
+    CPPUNIT_TEST_SUITE_END();
 
-protected:
-	void test();
+  protected:
+    void test();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestNewHandleSupport);
@@ -21,12 +20,10 @@ CPPUNIT_TEST_SUITE_REGISTRATION(TestNewHandleSupport);
 //
 // tests implementation
 //
-class Widget : public easy::EasyNewHandleSupport<Widget>
-{
+class Widget : public easy::EasyNewHandleSupport<Widget> {
 
 };
-void TestNewHandleSupport::test()
-{
-	Widget* p = new Widget;
-	delete p;
+void TestNewHandleSupport::test() {
+    Widget* p = new Widget;
+    delete p;
 }

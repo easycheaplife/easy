@@ -1,20 +1,19 @@
 ﻿#include "easy_cppunit_proxy.h"
 #include "corpus_proxy.h"
-#include <string.h> 
+#include <string.h>
 //
 // TestCase class
 //
-class TestCorpusProxy : public CPPUNIT_NS::TestCase
-{
-	CPPUNIT_TEST_SUITE(TestCorpusProxy);
+class TestCorpusProxy : public CPPUNIT_NS::TestCase {
+    CPPUNIT_TEST_SUITE(TestCorpusProxy);
 #if 0
-	CPPUNIT_IGNORE;
+    CPPUNIT_IGNORE;
 #endif
-	CPPUNIT_TEST(test);
-	CPPUNIT_TEST_SUITE_END();
+    CPPUNIT_TEST(test);
+    CPPUNIT_TEST_SUITE_END();
 
-protected:
-	void test();
+  protected:
+    void test();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestCorpusProxy);
@@ -63,140 +62,124 @@ const static std::wstring korean = L"한 荷塘 위로 올 리 기에 무수히 
 									그 는 荷塘 쪽 으로 가 주 세요.잎 본 은 어깨동무 를 하 고 密密地 으라고, 이 완연히 있 는 양자택일 응결되다 벽 파 흔적 이다.\
 									잎 은 갈무리 의 물 밑 으로 가 렸 을 못 만 나 일부 색깔;반면 잎 은 훨씬 더 만날 풍치 했 다.";
 
-void TestCorpusProxy::test()
-{
-	CorpusProxy proxy;
-	bool success = proxy.Connect("127.0.0.1","root","sbivfh");
-	if (!success)
-	{
-		std::cout << "connect mysql failed!" << std::endl;
-		return;
-	}
-	proxy.AddUser("lee","lee",PERMISSION_DWONLOAD);
-	VisitPermission permission = proxy.Login("lee","lee");
+void TestCorpusProxy::test() {
+    CorpusProxy proxy;
+    bool success = proxy.Connect("127.0.0.1","root","sbivfh");
+    if (!success) {
+        std::cout << "connect mysql failed!" << std::endl;
+        return;
+    }
+    proxy.AddUser("lee","lee",PERMISSION_DWONLOAD);
+    VisitPermission permission = proxy.Login("lee","lee");
 
-	std::wstring unicode_file_name(L"file_name");
-	std::string ftp_path("ftp://lee:123456@127.0.0.1:9876");
-	int	character_count = 50000;
-	
+    std::wstring unicode_file_name(L"file_name");
+    std::string ftp_path("ftp://lee:123456@127.0.0.1:9876");
+    int	character_count = 50000;
+
 #if 1
-	proxy.Upload(CORPUS_CHINESE,unicode_file_name,chinese,ftp_path,wcslen(chinese.c_str()));
-	proxy.Upload(CORPUS_ENGLISH,unicode_file_name,english,ftp_path,wcslen(english.c_str()));
-	proxy.Upload(CORPUS_JAPANESE,unicode_file_name,janpanese,ftp_path,wcslen(janpanese.c_str()));
-	proxy.Upload(CORPUS_RUSSIAN,unicode_file_name,russian,ftp_path,wcslen(russian.c_str()));
-	proxy.Upload(CORPUS_KOREAN,unicode_file_name,korean,ftp_path,wcslen(korean.c_str()));
+    proxy.Upload(CORPUS_CHINESE,unicode_file_name,chinese,ftp_path,wcslen(chinese.c_str()));
+    proxy.Upload(CORPUS_ENGLISH,unicode_file_name,english,ftp_path,wcslen(english.c_str()));
+    proxy.Upload(CORPUS_JAPANESE,unicode_file_name,janpanese,ftp_path,wcslen(janpanese.c_str()));
+    proxy.Upload(CORPUS_RUSSIAN,unicode_file_name,russian,ftp_path,wcslen(russian.c_str()));
+    proxy.Upload(CORPUS_KOREAN,unicode_file_name,korean,ftp_path,wcslen(korean.c_str()));
 
-	proxy.Delete(CORPUS_CHINESE,unicode_file_name);
-	proxy.Delete(CORPUS_ENGLISH,unicode_file_name);
-	proxy.Delete(CORPUS_JAPANESE,unicode_file_name);
-	proxy.Delete(CORPUS_RUSSIAN,unicode_file_name);
-	proxy.Delete(CORPUS_KOREAN,unicode_file_name);
+    proxy.Delete(CORPUS_CHINESE,unicode_file_name);
+    proxy.Delete(CORPUS_ENGLISH,unicode_file_name);
+    proxy.Delete(CORPUS_JAPANESE,unicode_file_name);
+    proxy.Delete(CORPUS_RUSSIAN,unicode_file_name);
+    proxy.Delete(CORPUS_KOREAN,unicode_file_name);
 #endif
 
-	std::string file_name;
-	std::wstring sel_chinese_key_word = L"叶";
-	std::map<std::string,context_info*>	__map_context_info;
-	list_context_info __lock_queue;
+    std::string file_name;
+    std::wstring sel_chinese_key_word = L"叶";
+    std::map<std::string,context_info*>	__map_context_info;
+    list_context_info __lock_queue;
 
-	unsigned int __count_chinese = proxy.Count(CORPUS_CHINESE,sel_chinese_key_word);
-	unsigned int __record_count_chinese = proxy.Count(CORPUS_CHINESE);
-	unsigned int __character_count_chinese = proxy.Character_Count(CORPUS_CHINESE);
-	unsigned int __character_count_english = proxy.Character_Count(CORPUS_ENGLISH);
+    unsigned int __count_chinese = proxy.Count(CORPUS_CHINESE,sel_chinese_key_word);
+    unsigned int __record_count_chinese = proxy.Count(CORPUS_CHINESE);
+    unsigned int __character_count_chinese = proxy.Character_Count(CORPUS_CHINESE);
+    unsigned int __character_count_english = proxy.Character_Count(CORPUS_ENGLISH);
 
-	proxy.Search(CORPUS_CHINESE,sel_chinese_key_word,__lock_queue);
-	for(list_context_info::iterator __it = __lock_queue.begin(); __it != __lock_queue.end(); ++__it)
-	{
-		context_info* __context_info = (*__it);
-		if (__context_info)
-		{
-			std::cout << "CORPUS_CHINESE KEYWORD:" << __context_info->character_count_ << __context_info->ftp_path_ << proxy.UnicodeToAnsi(__context_info->file_name_) << proxy.UnicodeToAnsi(__context_info->full_context_) << std::endl;
-			delete __context_info;
-			__context_info = NULL;
-		}
-	}
-	__lock_queue.clear();
+    proxy.Search(CORPUS_CHINESE,sel_chinese_key_word,__lock_queue);
+    for(list_context_info::iterator __it = __lock_queue.begin(); __it != __lock_queue.end(); ++__it) {
+        context_info* __context_info = (*__it);
+        if (__context_info) {
+            std::cout << "CORPUS_CHINESE KEYWORD:" << __context_info->character_count_ << __context_info->ftp_path_ << proxy.UnicodeToAnsi(__context_info->file_name_) << proxy.UnicodeToAnsi(__context_info->full_context_) << std::endl;
+            delete __context_info;
+            __context_info = NULL;
+        }
+    }
+    __lock_queue.clear();
 
-	//	select limit
-	proxy.Search(CORPUS_CHINESE,sel_chinese_key_word,__lock_queue,0,4);
-	for(list_context_info::iterator __it = __lock_queue.begin(); __it != __lock_queue.end(); ++__it)
-	{
-		context_info* __context_info = (*__it);
-		if (__context_info)
-		{
-			std::cout << "CORPUS_CHINESE KEYWORD LIMIT:" << __context_info->character_count_ << __context_info->ftp_path_ << proxy.UnicodeToAnsi(__context_info->file_name_) << proxy.UnicodeToAnsi(__context_info->full_context_) << std::endl;
-			delete __context_info;
-			__context_info = NULL;
-		}
-	}
-	__lock_queue.clear();
+    //	select limit
+    proxy.Search(CORPUS_CHINESE,sel_chinese_key_word,__lock_queue,0,4);
+    for(list_context_info::iterator __it = __lock_queue.begin(); __it != __lock_queue.end(); ++__it) {
+        context_info* __context_info = (*__it);
+        if (__context_info) {
+            std::cout << "CORPUS_CHINESE KEYWORD LIMIT:" << __context_info->character_count_ << __context_info->ftp_path_ << proxy.UnicodeToAnsi(__context_info->file_name_) << proxy.UnicodeToAnsi(__context_info->full_context_) << std::endl;
+            delete __context_info;
+            __context_info = NULL;
+        }
+    }
+    __lock_queue.clear();
 
-	std::wstring sel_chinese_word = L"叶子";
-	proxy.Search(CORPUS_CHINESE,sel_chinese_word,__lock_queue);
-	for(list_context_info::iterator __it = __lock_queue.begin(); __it != __lock_queue.end(); ++__it)
-	{
-		context_info* __context_info =  (*__it);
-		if (__context_info)
-		{
-			std::cout << "CORPUS_CHINESE WORD:" << __context_info->character_count_ << __context_info->ftp_path_ << proxy.UnicodeToAnsi(__context_info->file_name_) << proxy.UnicodeToAnsi(__context_info->full_context_) << std::endl;
-			delete __context_info;
-			__context_info = NULL;
-		}
-	}
-	__lock_queue.clear();
+    std::wstring sel_chinese_word = L"叶子";
+    proxy.Search(CORPUS_CHINESE,sel_chinese_word,__lock_queue);
+    for(list_context_info::iterator __it = __lock_queue.begin(); __it != __lock_queue.end(); ++__it) {
+        context_info* __context_info =  (*__it);
+        if (__context_info) {
+            std::cout << "CORPUS_CHINESE WORD:" << __context_info->character_count_ << __context_info->ftp_path_ << proxy.UnicodeToAnsi(__context_info->file_name_) << proxy.UnicodeToAnsi(__context_info->full_context_) << std::endl;
+            delete __context_info;
+            __context_info = NULL;
+        }
+    }
+    __lock_queue.clear();
 
-	std::wstring sel_chinese_sentence = L"弥望的是田田的叶子";
-	proxy.Search(CORPUS_CHINESE,sel_chinese_sentence,__lock_queue);
-	for(list_context_info::iterator __it = __lock_queue.begin(); __it != __lock_queue.end(); ++__it)
-	{
-		context_info* __context_info =  (*__it);
-		if (__context_info)
-		{
-			std::cout << "CORPUS_CHINESE SEBTENCE:" << __context_info->character_count_ << __context_info->ftp_path_ << proxy.UnicodeToAnsi(__context_info->file_name_) << proxy.UnicodeToAnsi(__context_info->full_context_) << std::endl;
-			delete __context_info;
-			__context_info = NULL;
-		}
-	}
-	__lock_queue.clear();
+    std::wstring sel_chinese_sentence = L"弥望的是田田的叶子";
+    proxy.Search(CORPUS_CHINESE,sel_chinese_sentence,__lock_queue);
+    for(list_context_info::iterator __it = __lock_queue.begin(); __it != __lock_queue.end(); ++__it) {
+        context_info* __context_info =  (*__it);
+        if (__context_info) {
+            std::cout << "CORPUS_CHINESE SEBTENCE:" << __context_info->character_count_ << __context_info->ftp_path_ << proxy.UnicodeToAnsi(__context_info->file_name_) << proxy.UnicodeToAnsi(__context_info->full_context_) << std::endl;
+            delete __context_info;
+            __context_info = NULL;
+        }
+    }
+    __lock_queue.clear();
 
-	std::wstring sel_english_key_word = L"leaves";
-	proxy.Search(CORPUS_ENGLISH,sel_english_key_word,__lock_queue);
-	for(list_context_info::iterator __it = __lock_queue.begin(); __it != __lock_queue.end(); ++__it)
-	{
-		context_info* __context_info =  (*__it);
-		if (__context_info)
-		{
-			std::cout << "CORPUS_ENGLISH KEYWORD:" << __context_info->character_count_ << __context_info->ftp_path_ << proxy.UnicodeToAnsi(__context_info->file_name_) << proxy.UnicodeToAnsi(__context_info->full_context_) << std::endl;
-			delete __context_info;
-			__context_info = NULL;
-		}
-	}
-	__lock_queue.clear();
+    std::wstring sel_english_key_word = L"leaves";
+    proxy.Search(CORPUS_ENGLISH,sel_english_key_word,__lock_queue);
+    for(list_context_info::iterator __it = __lock_queue.begin(); __it != __lock_queue.end(); ++__it) {
+        context_info* __context_info =  (*__it);
+        if (__context_info) {
+            std::cout << "CORPUS_ENGLISH KEYWORD:" << __context_info->character_count_ << __context_info->ftp_path_ << proxy.UnicodeToAnsi(__context_info->file_name_) << proxy.UnicodeToAnsi(__context_info->full_context_) << std::endl;
+            delete __context_info;
+            __context_info = NULL;
+        }
+    }
+    __lock_queue.clear();
 
-	std::wstring sel_english_word = L"above the water";
-	proxy.Search(CORPUS_ENGLISH,sel_english_word,__lock_queue);
-	for(list_context_info::iterator __it = __lock_queue.begin(); __it != __lock_queue.end(); ++__it)
-	{
-		context_info* __context_info =  (*__it);
-		if (__context_info)
-		{
-			std::cout << "CORPUS_ENGLISH WORD:" << __context_info->character_count_ << __context_info->ftp_path_ << proxy.UnicodeToAnsi(__context_info->file_name_) << proxy.UnicodeToAnsi(__context_info->full_context_) << std::endl;
-			delete __context_info;
-			__context_info = NULL;
-		}
-	}
-	__lock_queue.clear();
+    std::wstring sel_english_word = L"above the water";
+    proxy.Search(CORPUS_ENGLISH,sel_english_word,__lock_queue);
+    for(list_context_info::iterator __it = __lock_queue.begin(); __it != __lock_queue.end(); ++__it) {
+        context_info* __context_info =  (*__it);
+        if (__context_info) {
+            std::cout << "CORPUS_ENGLISH WORD:" << __context_info->character_count_ << __context_info->ftp_path_ << proxy.UnicodeToAnsi(__context_info->file_name_) << proxy.UnicodeToAnsi(__context_info->full_context_) << std::endl;
+            delete __context_info;
+            __context_info = NULL;
+        }
+    }
+    __lock_queue.clear();
 
-	std::wstring sel_english_sentence = L"A breeze stirs, sending over breaths fragrance, like the drifting from a distant building singing";
-	proxy.Search(CORPUS_ENGLISH,sel_english_sentence,__lock_queue);
-	for(list_context_info::iterator __it = __lock_queue.begin(); __it != __lock_queue.end(); ++__it)
-	{
-		context_info* __context_info =  (*__it);
-		if (__context_info)
-		{
-			std::cout << "CORPUS_ENGLISH SENTENCE::" << __context_info->character_count_ << __context_info->ftp_path_ << proxy.UnicodeToAnsi(__context_info->file_name_) << proxy.UnicodeToAnsi(__context_info->full_context_) << std::endl;
-			delete __context_info;
-			__context_info = NULL;
-		}
-	}
-	__lock_queue.clear();
+    std::wstring sel_english_sentence = L"A breeze stirs, sending over breaths fragrance, like the drifting from a distant building singing";
+    proxy.Search(CORPUS_ENGLISH,sel_english_sentence,__lock_queue);
+    for(list_context_info::iterator __it = __lock_queue.begin(); __it != __lock_queue.end(); ++__it) {
+        context_info* __context_info =  (*__it);
+        if (__context_info) {
+            std::cout << "CORPUS_ENGLISH SENTENCE::" << __context_info->character_count_ << __context_info->ftp_path_ << proxy.UnicodeToAnsi(__context_info->file_name_) << proxy.UnicodeToAnsi(__context_info->full_context_) << std::endl;
+            delete __context_info;
+            __context_info = NULL;
+        }
+    }
+    __lock_queue.clear();
 }
