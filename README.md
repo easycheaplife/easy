@@ -19,7 +19,3 @@ file list
 unit test:
 ---
 	just add file to makefile or visual studio solution.
-##### linux
-![](http://img.my.csdn.net/uploads/201411/20/1416454253_3229.jpg)
-##### windows
-![](http://img.my.csdn.net/uploads/201411/20/1416454253_8780.jpg)
